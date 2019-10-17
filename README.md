@@ -26,7 +26,7 @@ un-installed** before you proceed.
 
 1. Run `node bin/www` in the CMD Prompt.
 2. Open a web browser and browse to `localhost/`.
-3. Use <CTRL-C> in the CMD Prompt to stop the server.
+3. Use &lt;CTRL-C&gt; in the CMD Prompt to stop the server.
 
 # Notes For Jaime
 
@@ -43,6 +43,6 @@ stuff as appropriate. Then use:
 To create and run a container:  
 `docker run --name dbas --detach -p 80:<port> pressstart:<version-num>`
 
-Note: If the dockerfile has a CMD rule that starts node or npm, <CTRL-C>-ing
+Note: If the dockerfile has a CMD rule that starts node or npm, &lt;CTRL-C&gt;-ing
 out of an interactive container gets iffy, use `docker container stop dbas`
 instead.
