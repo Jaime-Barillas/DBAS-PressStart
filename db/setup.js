@@ -7,7 +7,7 @@ function setupDatabase() {
     });
 
     client.connect();
-    return client.query('DROP DATABASE IF EXISTS pressstartdb')
+    return client.query('DROP DATABASE IF EXISTS pressstartdb;')
                  .then(() => client.query('CREATE DATABASE pressstartdb;'))
                  .then(() => client.end());
 }
