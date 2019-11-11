@@ -119,6 +119,31 @@ function genItem() {
     return item;
 }
 
+function seedTables() {
+    // TODO: Move sql to its own file.
+    let insertMemberSql = 'INSERT INTO tbl_members(member_password, member_preffered_store, member_first_name, member_last_name, member_postal_code, member_phone, member_email, member_mailing_list) VALUES($1, $2, $3, $4, $5, $6, $7, $8);';
+    let insertItemSql = 'INSERT INTO tbl_items(item_type_id, item_store_id, item_condition_id, item_name, item_cost, item_sale_price, item_mrsp, item_stock_quantity, item_description) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);';
+
+    let client = new Client({
+        user: 'pressstartadmin',
+        database: 'pressstartdb'
+    });
+    let queries = client.connect();
+
+    // Generate members -> queue up the queries -> close the connection.
+    let members = Array.from({length: 50}, genMember);
+    for (const member of members) {
+        queries = queries.then(() => client.query(insertMemberSql, member));
+    }
+
+    let items = Array.from({length: 50}, genItem);
+    for (const item of items) {
+        queries = queries.then(() => client.query(insertItemSql, item));
+    }
+
+    queries.then(() => client.end());
+}
+
 switch(process.argv[2]) {
     case 'reset':
         console.log('Reseting database tables...');
@@ -129,13 +154,15 @@ switch(process.argv[2]) {
 
     case 'seed':
         console.log('Seeding databaes tables...');
+        seedTables();
         console.log('Done!')
         break;
 
     default:
         console.log('Performing full setup of the Press Start database...');
         setupDatabase()
-            .then(() => setupTables());
+            .then(() => setupTables())
+            .then(() => seedTables());
         console.log('Done!')
         break;
 }
