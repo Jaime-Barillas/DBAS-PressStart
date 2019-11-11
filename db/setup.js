@@ -1,5 +1,13 @@
+const fs = require('fs');
+const path = require('path');
+
 const { Client } = require('pg');
 
+/*======= Variables =======*/
+const firstNames = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'firstnames-short.json'), 'utf8'));
+const lastNames = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'lastnames-short.json'), 'utf8'));
+
+/*======= Functions =======*/
 function setupDatabase() {
     let client = new Client({
         user: 'pressstartadmin',
@@ -28,7 +36,7 @@ function setupTables() {
                      member_last_name varchar(30),
                      member_postal_code varchar(6),
                      member_phone varchar(10),
-                     member_email varchar(40),
+                     member_email varchar(60),
                      member_mailing_list boolean
                  );`)
                  .then(() => client.query(`CREATE TABLE tbl_items(
@@ -44,6 +52,71 @@ function setupTables() {
                      item_description varchar(120)
                  );`))
                  .then(() => client.end());
+}
+
+function randPrice(max) {
+    return (Math.random() * max).toFixed(2);
+}
+
+function randInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
+function randNth(array) {
+    return array[randInt(array.length)];
+}
+
+function randPostalCode() {
+    // TODO: Make pretty.
+    // Canadian postal code rules:
+    //     Does not include D, F, I, O, Q, U.
+    //     W, Z, do not appear in the first letter.
+    let firstAlpha = 'ABCEGHJKLMNPRSTVXY';
+    let restAlpha = 'ABCEGHJKLMNPRSTVWXYZ';
+
+    return randNth(firstAlpha) +
+           randInt(10).toString() +
+           randNth(restAlpha) +
+           randInt(10).toString() +
+           randNth(restAlpha) +
+           randInt(10).toString();
+}
+
+function randPhoneNumber() {
+    //     --3--3---4           --3--3---4
+    return (1000000000 + randInt(8999999999)).toString();
+}
+
+function genMember() {
+    let member = [];
+
+    // Hardcode password so we can log-in as members for testing.
+    member.push('password');
+    member.push(1);
+    member.push(randNth(firstNames));
+    member.push(randNth(lastNames));
+    member.push(randPostalCode());
+    member.push(randPhoneNumber());
+    member.push(`${member[2]}.${member[3]}@example.com`);
+    member.push(randNth(['true', 'false']));
+
+    return member;
+}
+
+function genItem() {
+    let item = [];
+
+    item.push(1);
+    item.push(1);
+    item.push(1);
+    item.push(`TEST_ITEM_${randInt(100000)}`);
+    item.push(randPrice(100));
+    item.push(randPrice(100));
+    item.push(randPrice(100));
+    item.push(randInt(1000));
+    item.push('A simple test item.');
+
+    return item;
 }
 
 switch(process.argv[2]) {
