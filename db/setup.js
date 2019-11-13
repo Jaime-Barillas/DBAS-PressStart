@@ -1,3 +1,10 @@
+/*
+Author:     Jaime Barillas
+Created:    11 Nov 2019
+Since:      11 Nov 2019
+Description:    Create database and seed database tables.
+*/
+
 const fs = require('fs');
 const path = require('path');
 
