@@ -33,7 +33,7 @@ function setupTables() {
     client.connect();
     // generate table
     return client.query(`CREATE TABLE tbl_employees(
-        employee_id serial,
+        employee_id serial PRIMARY KEY,
         employee_password varchar(32),
         employee_first_name varchar(20),
         employee_last_name varchar(30),
@@ -42,7 +42,8 @@ function setupTables() {
         employee_email varchar(60),
         employee_address varchar(120),
         employee_postal varchar(6),
-        employee_availability text
+        employee_availability text,
+        employee_wage money
         );`)
         .then(() => client.end());
 }

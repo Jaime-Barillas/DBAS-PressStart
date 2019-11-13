@@ -33,7 +33,7 @@ function setupTables() {
     client.connect();
     // generate table
     return client.query(`CREATE TABLE tbl_repair_items(
-        repair_item_id serial,
+        repair_item_id serial PRIMARY KEY,
         repair_invoice integer,
         repair_part_name varchar(30),
         repair_item_part_description varchar(120),

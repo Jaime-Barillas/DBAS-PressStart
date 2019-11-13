@@ -33,7 +33,7 @@ function setupTables() {
     client.connect();
     // generate table
     return client.query(`CREATE TABLE tbl_items(
-        item_id serial,
+        item_id serial PRIMARY KEY,
         item_type_id integer,
         store_id integer,
         condition_id integer,

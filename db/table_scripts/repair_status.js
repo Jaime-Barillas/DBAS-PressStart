@@ -33,7 +33,7 @@ function setupTables() {
     client.connect();
     // generate table
     return client.query(`CREATE TABLE tbl_repair_status(
-        repair_status_id serial,
+        repair_status_id serial PRIMARY KEY,
         repair_status_name varchar(20),
         repair_status_description varchar(50)
         );`)
