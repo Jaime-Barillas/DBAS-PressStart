@@ -41,7 +41,7 @@ function setupTables() {
         employee_phone varchar(10),
         employee_email varchar(60),
         employee_address varchar(120),
-        employee_postal varchar(6),
+        employee_postal_code varchar(6),
         employee_availability text,
         employee_wage money
         );`)

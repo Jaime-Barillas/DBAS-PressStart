@@ -35,7 +35,7 @@ function setupTables() {
     return client.query(`CREATE TABLE tbl_members(
         member_id serial PRIMARY KEY,
         member_password varchar(32),
-        preffered_store integer,
+        member_preffered_store integer,
         member_first_name varchar(20),
         member_last_name varchar(30),
         member_postal_code varchar(6),
