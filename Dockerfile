@@ -1,15 +1,23 @@
-FROM node:8.11-alpine
+FROM node:10.16.3-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
+RUN apk add --no-cache postgresql && \
+    mkdir /run/postgresql && \
+    chown node:node /run/postgresql
 
-COPY package.json /usr/src/app/
+COPY package.json /home/node/app/
+RUN chown -R node:node /home/node/app
+
+USER node
 RUN npm install
 
-COPY . /usr/src/app
+ENV PGDATA /home/node/pgdata
+RUN initdb && pg_ctl start &&\
+    createuser -w -d pressstartadmin && \
+    pg_ctl stop
 
-ENV PORT 5000
+ENV PORT 8000
 EXPOSE $PORT
-CMD [ "npm", "start" ]
+
+CMD [ "/bin/sh" ]
