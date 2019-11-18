@@ -127,7 +127,7 @@ function randomWage() {
 function randomAvailability() {
     // random wage generation
     let days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
-    return randNth(days) + ' ' + randNth(days) + '' + randNth(days);
+    return randNth(days) + ' ' + randNth(days) + ' ' + randNth(days);
 
 }
 
@@ -171,7 +171,7 @@ function genEmployee() {
     employee.push(randNth(['technician', 'manager']));
     employee.push(randPhoneNumber());
     employee.push(`${employee[1]}.${employee[2]}@example.com`);
-    employee.push(randInt(9999) + randNth(streetnames) + randNth('St','Blvd','Cres','Rd','Ct'));
+    employee.push(randInt(9999) +' '+ randNth(streetnames) +' '+  randNth(['St','Blvd','Cres','Rd','Ct']));
     employee.push(randPostalCode());
     employee.push(randomAvailability());
     employee.push(randomWage());
