@@ -1,15 +1,40 @@
 /*
 Author:     Jaime Barillas, Shaun McCrum
 Created:    11 Nov 2019
-Since:      18 Nov 2019
+Since:      19 Nov 2019
 Description:    Create database and seed database tables.
 */
 
 const fs = require('fs');
 const path = require('path');
-//const employeeFunction = require("./table_scripts/employees.js");
 
 const { Client } = require('pg');
+// === Import the table scripts ===
+// Basic Tables
+const storeFunction = require("./table_scripts/stores");
+const memberFunction = require("./table_scripts/members");
+const employeeFunction = require("./table_scripts/employees");
+const newsFunction = require("./table_scripts/news");
+// Item-related tables
+const itemTypeFunction = require("./table_scripts/item_types");
+const boxConditionFunction = require("./table_scripts/box_conditions");
+const manualConditionFunction = require("./table_scripts/manual_conditions");
+const physicalConditionFunction = require("./table_scripts/physical_conditions");
+const conditionFunction = require("./table_scripts/conditions");
+const itemFunction = require("./table_scripts/items");
+// Sales tables
+const saleInvoiceFunction = require("./table_scripts/sale_invoices");
+const saleItemFunction = require("./table_scripts/sale_items");
+// Trade Tables
+const tradeInvoiceFunction = require("./table_scripts/trade_invoices");
+const tradeItemFunction = require("./table_scripts/trade_items");
+// Repair Tables
+const repairStatusFunction = require("./table_scripts/repair_status");
+const repairInvoiceFunction = require("./table_scripts/repair_invoices");
+const repaiItemsFunction = require("./table_scripts/repair_items");
+// Reservation Tables
+const reservationFunction = require("./table_scripts/reservations");
+const reservationItemFunction = require("./table_scripts/reservation_items");
 
 /*======= Variables =======*/
 const firstNames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/population_scripts', 'firstnames-short.json'), 'utf8'));
@@ -35,51 +60,45 @@ function setupDatabase() {
 }
 
 function setupTables() {
-    let client = new Client({
-        user: 'pressstartadmin',
-        database: 'pressstartdb'
-    });
-    console.log('Setting up Tables.')
-    // TODO: Maybe move sql to its own file and read it in?
-    
-    client.connect();
-    return client.query(`CREATE TABLE tbl_members(
-            member_id serial PRIMARY KEY,
-            member_password varchar(32),
-            member_preffered_store integer,
-            member_first_name varchar(20),
-            member_last_name varchar(30),
-            member_postal_code varchar(6),
-            member_phone varchar(10),
-            member_email varchar(60),
-            member_mailing_list boolean
-        );`)
-        .then(() => client.query(`CREATE TABLE tbl_items(
-            item_id serial PRIMARY KEY,
-            item_type_id integer,
-            store_id integer,
-            condition_id integer,
-            item_name varchar(20),
-            item_cost money,
-            item_sale_price money,
-            item_mrsp money,
-            item_stock_quantity smallint,
-            item_description varchar(120)
-        );`))
-        .then (() => client.query(`CREATE TABLE tbl_employees(
-            employee_id serial PRIMARY KEY,
-            employee_password varchar(32),
-            employee_first_name varchar(20),
-            employee_last_name varchar(30),
-            employee_job_title varchar(40),
-            employee_phone varchar(10),
-            employee_email varchar(60),
-            employee_address varchar(120),
-            employee_postal_code varchar(6),
-            employee_availability text,
-            employee_wage money
-            );`))
-        .then(() => client.end());
+    console.log('Removing Tables as necessary and Setting up new Tables.')
+    // Drop and Create Tables.
+    return storeFunction.dropTables()
+    .then (() => storeFunction.setupTables())
+    .then (() => memberFunction.dropTables())
+    .then (() => memberFunction.setupTables())
+    .then (() => employeeFunction.dropTables())
+    .then (() => employeeFunction.setupTables())
+    .then (() => newsFunction.dropTables())
+    .then (() => newsFunction.setupTables())
+    .then (() => itemTypeFunction.dropTables())
+    .then (() => itemTypeFunction.setupTables())
+    .then (() => boxConditionFunction.dropTables())
+    .then (() => boxConditionFunction.setupTables())
+    .then (() => manualConditionFunction.dropTables())
+    .then (() => manualConditionFunction.setupTables())
+    .then (() => physicalConditionFunction.dropTables())
+    .then (() => physicalConditionFunction.setupTables())
+    .then (() => conditionFunction.dropTables())
+    .then (() => conditionFunction.setupTables())
+    .then (() => itemFunction.dropTables())
+    .then (() => itemFunction.setupTables())
+    .then (() => saleInvoiceFunction.dropTables())
+    .then (() => saleInvoiceFunction.setupTables())
+    .then (() => saleItemFunction.dropTables())
+    .then (() => saleItemFunction.setupTables())
+    .then (() => tradeInvoiceFunction.dropTables())
+    .then (() => tradeInvoiceFunction.setupTables())
+    .then (() => tradeItemFunction.dropTables())
+    .then (() => tradeItemFunction.setupTables())
+    .then (() => repairStatusFunction.dropTables())
+    .then (() => repairStatusFunction.setupTables())
+    .then (() => repairInvoiceFunction.dropTables())
+    .then (() => repairInvoiceFunction.setupTables())
+    .then (() => repaiItemsFunction.dropTables())
+    .then (() => repaiItemsFunction.setupTables())
+    .then (() => reservationFunction.dropTables())
+    .then (() => reservationItemFunction.setupTables()) 
+    ;
 }
 
 function randPrice(max) {
@@ -124,13 +143,53 @@ function randomWage() {
     
 
 }
+// Set availability
 function randomAvailability() {
     // random wage generation
     let days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
-    return randNth(days) + ' ' + randNth(days) + ' ' + randNth(days);
+    let availabilityString= "";
+    days = shuffle(days);
+    // Shuffle referenced from the Fisher–Yates Shuffle method https://bost.ocks.org/mike/shuffle/
+    function shuffle(array) {
+        var copyArray = [], n = array.length, i;
+        
+        // While there remain elements to shuffle…
+        while (n) {
+        
+            // Pick a remaining element…
+            i = Math.floor(Math.random() * array.length);
+        
+            // If not already shuffled, move it to the new array.
+            if (i in array) {
+                copyArray.push(array[i]);
+            delete array[i];
+            n--;
+            }
+        }
+        return copyArray;
+    }
+    // ===  Define availability ===
+    
+    // Trim the array to random availability length
+    // We must have some days so max trimmed set to 4.
+    let  maxDaysOff = randInt(4);
+    for (i=1; i<=maxDaysOff; i++)
+    {
+        days.pop();
+    }
+    //sort array alphabetically
+    days = days.sort();
+
+    // Set day availability.
+    
+    for (i=0; i<=days.length; i++)
+    {
+        availabilityString += days[i] + ' ';
+    }
+    return availabilityString;
 
 }
-
+// Generate member seed
 function genMember() {
     let member = [];
 
@@ -162,6 +221,7 @@ function genItem() {
 
     return item;
 }
+
 function genEmployee() {
     let employee = [];
     // Hardcode password so we can log-in as employees for testing.
@@ -176,16 +236,20 @@ function genEmployee() {
     employee.push(randomAvailability());
     employee.push(randomWage());
     return employee;
-
 }
 
 function seedTables() {
     // TODO: Move sql to its own file.
     
-    let insertMemberSql = 'INSERT INTO tbl_members(member_password, member_preffered_store, member_first_name, member_last_name, member_postal_code, member_phone, member_email, member_mailing_list) VALUES($1, $2, $3, $4, $5, $6, $7, $8);';
-    let insertItemSql = 'INSERT INTO tbl_items(item_type_id, store_id, condition_id, item_name, item_cost, item_sale_price, item_mrsp, item_stock_quantity, item_description) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);';
+    let insertMemberSql = 'INSERT INTO tbl_members(member_password, member_preffered_store, member_first_name, member_last_name, '+
+        'member_postal_code, member_phone, member_email, member_mailing_list) '+
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8);';
+    let insertItemSql = 'INSERT INTO tbl_items(item_type_id, store_id, condition_id, item_name, item_cost, item_sale_price, '+
+        'item_mrsp, item_stock_quantity, item_description) '+
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);';
     let insertEmployeeSQL = 'INSERT INTO tbl_employees(employee_password, employee_first_name, employee_last_name, '+
-        'employee_job_title, employee_phone, employee_email, employee_address, employee_postal_code, employee_availability, employee_wage) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);';
+        'employee_job_title, employee_phone, employee_email, employee_address, employee_postal_code, employee_availability, employee_wage) '+
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);';
 
    
     let client = new Client({

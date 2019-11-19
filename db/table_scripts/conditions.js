@@ -10,20 +10,17 @@ const path = require('path');
 
 const { Client } = require('pg');
 
-dropTables();
-
-function dropTables() {
+exports.dropTables = function() {
     let client = new Client({
         user: 'pressstartadmin',
         database: 'pressstartdb'      // The database may not yet exist so we log into the postgres database in the meantime.
     });
     client.connect();
     return client.query('DROP TABLE IF EXISTS tbl_conditions;')
-                 .then(() =>setupTables())
                  .then(() => client.end());
 }
 
-function setupTables() {
+exports.setupTables = function() {
     let client = new Client({
         user: 'pressstartadmin',
         database: 'pressstartdb'
