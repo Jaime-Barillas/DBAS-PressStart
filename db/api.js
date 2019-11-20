@@ -145,3 +145,51 @@ exports.Inventory = {
         // TODO: Write me.
     }
 }
+
+/**
+ * A collection of functions for interacting with Press Start member accounts.
+ * Contains functions to create and search members.
+ *
+ * @namespace
+ */
+exports.Members = {
+    /**
+     * Creates a new member with the specified info.
+     *
+     * @param {Object} memberData - Contains the required information for the new member.
+     * @param {String} memberData.email - The new member's email address.
+     * @param {String} memberData.password - The new member's password.
+     * @param {String} memberData.firstName - The new member's given name.
+     * @param {String} memberData.lastName - The new member's surname.
+     * @param {String} memberData.postalCode - The new member's postal code.
+     * @param {String} memberData.phone - The new member's phone number.
+     * @param {Boolean} memberData.phone - Whether the new member wishes to receive news letters.
+     * @param {integer} memberData.prefferedStore - Id for the new member's preffered store.
+     *
+     * @returns A Promise that contains a JS object representing the newly
+     * created member. If creation of the new member failed, <code>null</code>
+     * is returned.
+     *
+     * @memberof module:db/api.Members
+     */
+    create: function({email, password, firstName, lastName, postalCode, phone, mailingList, prefferedStore}) {
+        // TODO: Parameter validation.
+        const createSql = `INSERT INTO tbl_members(
+                               member_email,
+                               member_password,
+                               member_first_name,
+                               member_last_name,
+                               member_postal_code,
+                               member_phone,
+                               member_mailing_list,
+                               member_preffered_store
+                           ) VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+                               RETURNING *;`;
+
+        return pool.query(createSql, [123, password, firstName, lastName,
+                                      postalCode, phone, mailingList,
+                                      prefferedStore])
+                   .then(res => res.rows[0])
+                   .catch(_ => null);
+    }
+}
