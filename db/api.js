@@ -1,20 +1,55 @@
+const { Pool } = require('pg');
+
+var pool;
+
 /**
  * This module exports various objects which contain functions for interacting
  * with the Press Start database.
- * To require a particular set of functions, use the following code:
- * <br/>
- * <code>const { Inventory } = require('../db/api.js');</code>
+ *
+ * @example
+ * const db = require('../db/api.js');
+ * db.initialize();
+ * // Code interacting with the database...
+ * db.terminate();
+ *
+ * // Each of the namespaces and their associated functions can be reached via
+ * // their name, e.g.:
+ * // Access inventory functions:
+ * db.Inventory.getPaginated()
+ *
+ * // Access member functions:
+ * db.Members.search()
+ * // etc...
+ *
+ * // You can also destructure 'db' if you so choose:
+ * const { Inventory, Members, etc } = db;
  *
  * @module db/api
  */
 
 /**
+ * Initializes the connection pool to the database. Make sure you run this
+ * once before interacting with the database!
+ */
+exports.initialize = function() {
+    pool = new Pool({
+        user: 'pressstartadmin',
+        database: 'pressstartdb'
+    });
+}
+
+/**
+ * Waits for all queries to complete and shuts down the connections to the
+ * database. Make sure you call this once on shutdown!
+ */
+exports.terminate = function() {
+    pool.end();
+}
+
+/**
  * A collection of functions for interacting with the Press Start inventory.
  * Contains functions to retrieve inventory, search for specific inventory,
  * and update inventory.
- * To require this set of functions, use the following code:
- * <br/>
- * <code>const { Inventory } = require('../db/api.js');</code>
  *
  * @namespace
  */
@@ -22,7 +57,7 @@ exports.Inventory = {
     /**
      * This functions retrieves inventory items in a manner optimal for
      * pagination. The page offset, as well as, the amount of items per page
-     * can be set.
+     * can be provided.
      *
      * @summary Retrieves an array of inventory items from the Press Start
      * database.
@@ -30,19 +65,38 @@ exports.Inventory = {
      * @param {Number} [page=1] - The page offset.
      * @param {Number} [pageLimit=1] - The number of items per page.
      *
-     * @returns An array of objects containing item details. TODO: More Details.
+     * @returns A Promise that contains an array of JS objects, one for each
+     * item per page. May return a promise that contains an array with fewer
+     * than 'pageLimit' items or an empty array if there are not enough items
+     * to populate the requested page.
      *
      * @example
-     * let items = Inventory.getPaginated();      // Return the first page at 10 items per page.
+     * let promise = Inventory.getPaginated();      // Return the first page at 10 items per page.
      * @example
-     * let items = Inventory.getPaginated(4);     // Return the fourth page at 10 items per page.
+     * let promise = Inventory.getPaginated(4);     // Return the fourth page at 10 items per page.
      * @example
-     * let items = Inventory.getPaginated(4, 15); // Return the fourth page at 15 items per page.
+     * let promise = Inventory.getPaginated(4, 15); // Return the fourth page at 15 items per page.
+     * @example
+     * // Print the items when they have been retrieved from the db, also
+     * // handle any potential errors.
+     * promise.then(items => console.log(items))
+     *        .catch(err => console.log(err));
      *
      * @memberof module:db/api.Inventory
      */
     getPaginated: function(page = 1, pageLimit = 10) {
-        // TODO: Write me.
+        // TODO: Argument validation
+
+        const paginateSql = ` SELECT * FROM tbl_items
+                                  OFFSET $1
+                                  LIMIT $2;`;
+        // 'offset' determines how many records to drop from the query. It must
+        // be a multiple of 'pageLimit' (and start at 0) to paginate the
+        // results.
+        const offset = (page - 1) * pageLimit;
+
+        return pool.query(paginateSql, [offset, pageLimit])
+                   .then(res => res.rows);
     },
 
     /**
