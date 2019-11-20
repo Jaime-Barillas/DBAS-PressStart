@@ -186,7 +186,7 @@ exports.Members = {
                            ) VALUES($1, $2, $3, $4, $5, $6, $7, $8)
                                RETURNING *;`;
 
-        return pool.query(createSql, [123, password, firstName, lastName,
+        return pool.query(createSql, [email, password, firstName, lastName,
                                       postalCode, phone, mailingList,
                                       prefferedStore])
                    .then(res => res.rows[0])
