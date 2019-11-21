@@ -1,6 +1,6 @@
 {
     "source": {
-        "include": ["./README.md"]
+        "include": ["./README.md", "./db/api.js"]
     },
     "tags": {
         "allowUnknownTags": false
