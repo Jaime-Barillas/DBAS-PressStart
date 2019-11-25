@@ -41,10 +41,10 @@ const reservationItemFunction = require("./table_scripts/reservation_items");
 // Seeidng Scripts
 const basicTables = require("./population_scripts/basic_tables");
 const itemTables = require("./population_scripts/item_tables");
-/* const saleTables = require("./population_scripts/sale_tables");
+const saleTables = require("./population_scripts/sale_tables");
 const tradeTables = require("./population_scripts/trade_tables");
 const repairTables = require("./population_scripts/repair_tables");
-const reservationTables = require("./population_scripts/reservation_tables"); */
+const reservationTables = require("./population_scripts/reservation_tables");
 
 //Imported object data
 /* const firstNames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/population_scripts', 'firstnames-short.json'), 'utf8'));
@@ -113,8 +113,13 @@ function setupTables() {
 
 // Generate Table Data
 function seedTables() {
+    console.log('Seeding Tables.')
     return basicTables.seedBasicTables()
-        //.then (() => itemTables.seedItemTables())
+    //.then (() => itemTables.seedItemTables())
+    //.then (() => saleTables.seedSaleTables())
+    //.then (() => repairTables.seedRepairTables())
+    //.then (() => tradeTables.seedTradeTables())
+    //.then (() => itemTables.seedReservationTables())
     ;
 }
 

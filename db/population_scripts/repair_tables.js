@@ -10,12 +10,6 @@ const path = require('path');
 
 const { Client } = require('pg');
 
-const firstNames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/', 'firstnames-short.json'), 'utf8'));
-const lastNames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/', 'lastnames-short.json'), 'utf8'));
-const streetnames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/', 'streetnames.json'), 'utf8'));
-const streetnames = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'streetnames.json'), 'utf8'));
-
-
 function randInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }

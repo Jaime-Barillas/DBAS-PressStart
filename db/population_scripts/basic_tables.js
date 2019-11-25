@@ -214,6 +214,6 @@ exports.seedBasicTables = function() {
     }
 
 
-    console.log('Closing Connection for table seed');
+    console.log('Closing Connection for basic table seed');
     queries.then(() => client.end());
 }
