@@ -347,6 +347,50 @@ exports.Members = {
  */
 exports.Employees = {
     /**
+     * Creates a new employee with the specified info.
+     *
+     * @param {Object} employeeData - Contains the required information for the new employee.
+     * @param {String} employeeData.email - The new employee's email address.
+     * @param {String} employeeData.password - The new employee's password.
+     * @param {String} employeeData.firstName - The new employee's given name.
+     * @param {String} employeeData.lastName - The new employee's surname.
+     * @param {String} employeeData.jobTitle - The new employee's job title.
+     * @param {String} employeeData.postalCode - The new employee's postal code.
+     * @param {String} employeeData.address - The new employee's address.
+     * @param {String} employeeData.phone - The new employee's phone number.
+     * @param {String} employeeData.availability - The days the employee can work.
+     * @param {Number} employeeData.wage - The new employee's wage.
+     *
+     * @returns A Promise that contains a JS object representing the newly
+     * created employee. If creation of the new employee failed, <code>null</code>
+     * is returned.
+     *
+     * @memberof module:db/api.Employees
+     */
+    create: function({email, password, firstName, lastName, jobTitle, postalCode, address, phone, availability, wage}) {
+        // TODO: Parameter validation.
+        const createSql = `INSERT INTO tbl_employees(
+                               employee_email,
+                               employee_password,
+                               employee_first_name,
+                               employee_last_name,
+                               employee_job_title,
+                               employee_postal_code,
+                               employee_address,
+                               employee_phone,
+                               employee_availability,
+                               employee_wage
+                           ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                               RETURNING *;`;
+
+        return pool.query(createSql, [email, password, firstName, lastName,
+                                      jobTitle, postalCode, address, phone,
+                                      availability, wage])
+                   .then(res => res.rows[0])
+                   .catch(_ => null);
+    },
+
+    /**
      * This functions searches employees for any records that match the
      * provided contstraints. Constraints are defined as a JS object with
      * properties for the employee <code>id</code>, <code>email</code>,
