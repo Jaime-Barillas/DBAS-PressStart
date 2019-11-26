@@ -219,7 +219,7 @@ exports.Members = {
      * @param {String} memberData.lastName - The new member's surname.
      * @param {String} memberData.postalCode - The new member's postal code.
      * @param {String} memberData.phone - The new member's phone number.
-     * @param {Boolean} memberData.phone - Whether the new member wishes to receive news letters.
+     * @param {Boolean} memberData.mailingList - Whether the new member wishes to receive news letters.
      * @param {integer} memberData.prefferedStore - Id for the new member's preffered store.
      *
      * @returns A Promise that contains a JS object representing the newly
@@ -339,6 +339,12 @@ exports.Members = {
     }
 }
 
+/**
+ * A collection of functions for interacting with Press Start employee accounts.
+ * Contains functions to create and search employees.
+ *
+ * @namespace
+ */
 exports.Employees = {
     /**
      * This functions searches employees for any records that match the
