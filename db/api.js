@@ -103,8 +103,11 @@ exports.Inventory = {
      * This functions searches inventory items for any items that match the
      * provided contstraints. Constraints are defined as a JS object with
      * properties for the item <code>id</code>, <code>name</code>, and
-     * <code>type</code>. It is an error to provide an empty object or an
+     * <code>itemType</code>. It is an error to provide an empty object or an
      * object without at least one of the mentioned properties.
+     * <br/><br/>
+     * The <code>name</code> property is a case-insensitive pattern that needs
+     * to only match part of the item name. See examples for more info.
      * <br/><br/>
      * Only one of the properties is required, but if multiple are present,
      * then they will act as filters resulting in more specific results. Of
@@ -118,10 +121,11 @@ exports.Inventory = {
      *     desired item (or any combination of the three!)
      * @param {Number} item.id - The id of the desired item.
      * @param {String} item.name - The name of the desired item.
-     * @param {String} item.type - The item type of the desired item.
+     * @param {String} item.itemType - The item type of the desired item.
      *
      * @returns An array of matching items, empty if no items were found.
-     * TODO: More Details.
+     * @throws Error If none of the mentioned properties were present in the
+     *     passed in object.
      *
      * @example
      * // Return the item with id 5.
@@ -133,12 +137,64 @@ exports.Inventory = {
      * // Return all copies of the 'Call of Duty Classic' game for the PS3.
      * // ps3Game is a variable set elsewhere in code which contains the id
      * // for the item type corresponding to PS3 games.
-     * let items = Inventory.search({name: 'Call of Duty Classic', type: ps3Game});
+     * let items = Inventory.search({name: 'Call of Duty Classic', itemType: ps3Game});
+     * @example
+     * // Return all copies of any 'Call of Duty' game for the PS3.
+     * // ps3Game is a variable set elsewhere in code which contains the id
+     * // for the item type corresponding to PS3 games.
+     * let items = Inventory.search({name: 'Call of Duty', itemType: ps3Game}); // e.g. there is more than one 'Call of Duty'.
      *
      * @memberof module:db/api.Inventory
      */
-    search: function({id, name, type}) {
-        // TODO: Write me.
+    search: function({id, name, itemType}) {
+        // TODO: Parameter validation.
+        const searchByIdSql = `SELECT * FROM tbl_items
+                                   WHERE item_id = $1;`;
+
+        let result;
+
+        if (id) {
+            result = pool.query(searchByIdSql, [id]);
+        } else {
+            // Each constraint will be appended to this sql.
+            let searchSql = 'SELECT * FROM tbl_items WHERE ';
+
+            // Filter out any null or undefined values.
+            // These entries provide an ordered mapping from column name to
+            // the search pattern.
+            let entries = [
+                ['item_name', name],
+                ['item_type_id', itemType]
+            ].filter(([_, value]) => !!value);
+
+            // We must have at least one of id, name, or itemType.
+            if (entries.length === 0) {
+                throw new Error('Must specify at least one of: id, name, or itemType');
+            }
+
+            // The meat of the function:
+
+            // We know that if we reached this code, entries has at least one
+            // value inside it. We only need to test for the second one.
+            // The first entry will be added to the where clause
+            // but second entry must have an AND prepended.
+            let [first, second] = entries;
+
+            if (first[0] == 'item_name') {
+                searchSql += `${first[0]} ILIKE $1 || '%'`;
+            } else {
+                searchSql += `${first[0]} = $1`;
+            }
+
+            if (second) {
+                searchSql += ` AND ${second[0]} = $2`;
+            }
+            searchSql += ';';
+
+            result = pool.query(searchSql, entries.map(entry => entry[1]));
+        }
+
+        return result.then(res => res.rows);
     },
 
     update: function() {
