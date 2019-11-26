@@ -191,5 +191,94 @@ exports.Members = {
                                       prefferedStore])
                    .then(res => res.rows[0])
                    .catch(_ => null);
+    },
+
+    /**
+     * This functions searches members for any records that match the
+     * provided contstraints. Constraints are defined as a JS object with
+     * properties for the member <code>id</code>, <code>email</code>,
+     * <code>firstName</code>, or <code>lastName</code>. It is an error to
+     * provide an empty object or an object without at least one of the
+     * mentioned properties.
+     * <br/><br/>
+     * The <code>email</code>, <code>firstName</code>, and <code>lastName</code>
+     * properties are case-insensitive patterns that need to only match part
+     * of their respective attributes. See examples for more info.
+     * <br/><br/>
+     * Only one of the properties is required, but if multiple are present,
+     * then they will act as filters resulting in more specific results. Of
+     * course, if the <code>id</code> property is present, then it will
+     * supersede the other properties and return the item it directly
+     * corresponds to.
+     *
+     * @summary Searches for a member from the Press Start database.
+     *
+     * @param {Object} member - An object containing the id, email, firstName
+     *     or lastName of the desired member (or any combination of the four!)
+     * @param {Number} member.id - The id of the desired member.
+     * @param {String} member.email - The email of the desired member.
+     * @param {String} member.firstName - The first name of the desired member.
+     * @param {String} member.lastName - The last name of the desired member.
+     *
+     * @returns An array of matching items, empty if no items were found.
+     * @throws Error If none of the mentioned properties were present in the
+     *     passed in object.
+     *
+     * @example
+     * // Return the member with id 5.
+     * let promise = Member.search({id: 5});
+     * @example
+     * // Return all members with a first name that starts with 'al'.
+     * let promise = Member.search({firstName: 'al'}); // e.g. member with first name: alphonse
+     * @example
+     * // Return all Members whose first name starts with 'al' and last name
+     * // starts with 'do'.
+     * let promise = Member.search({firstName: 'al', lastName: 'do'}); // e.g. member: alphonse, dosomething
+     *
+     * @memberof module:db/api.Members
+     */
+    search: function({id, email, firstName, lastName}) {
+        // TODO: Parameter validation.
+        const searchByIdSql = `SELECT * FROM tbl_members
+                                   WHERE member_id = $1;`;
+
+        let result;
+
+        if (id) {
+            result = pool.query(searchByIdSql, [id]);
+        } else {
+            // Each constraint will be appended to this sql.
+            let searchSql = 'SELECT * FROM tbl_members WHERE ';
+
+            // Filter out any null or undefined values.
+            // These entries provide an ordered mapping from column name to
+            // the search pattern.
+            let entries = [
+                ['member_email', email],
+                ['member_first_name', firstName],
+                ['member_last_name', lastName]
+            ].filter(([_, value]) => !!value);
+
+            // We must have at least one of email, firstName, or lastName.
+            if (entries.length === 0) {
+                throw new Error('Must specify at least one of: id, email, firstName, or lastName');
+            }
+
+            // The meat of the function:
+
+            // The first entry will be added to the where clause
+            // but all subsequent entries must have an AND prepended.
+            let [first, ...rest] = entries;
+
+            searchSql += `${first[0]} ILIKE $1 || '%'`;
+            for (var i = 0; i < rest.length; i++) {
+                searchSql += ` AND ${rest[i][0]} ILIKE $${i + 2} || '%'`;
+            }
+            searchSql += ';';
+
+            result = pool.query(searchSql, entries.map(entry => entry[1]));
+        }
+
+        return result.then(res => res.rows);
     }
 }
