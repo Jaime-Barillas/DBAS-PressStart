@@ -1,7 +1,7 @@
 /*
 Author:     Shaun McCrum
 Created:    19 Nov 2019
-Since:      19 Nov 2019
+Since:      27 Nov 2019
 Description:  Create table data for database tables
 */
 
@@ -18,39 +18,55 @@ function randNth(array) {
     return array[randInt(array.length)];
 }
 
-function randPostalCode() {
-    // TODO: Make pretty.
-    // Canadian postal code rules:
-    //     Does not include D, F, I, O, Q, U.
-    //     W, Z, do not appear in the first letter.
-    let firstAlpha = 'ABCEGHJKLMNPRSTVXY';
-    let restAlpha = 'ABCEGHJKLMNPRSTVWXYZ';
-
-    return randNth(firstAlpha) +
-           randInt(10).toString() +
-           randNth(restAlpha) +
-           randInt(10).toString() +
-           randNth(restAlpha) +
-           randInt(10).toString();
+// Generate random price within defined maxmimum
+function randPrice(max) {
+    return (Math.random() * max).toFixed(2);
 }
 
-function randPhoneNumber() {
-    //     --3--3---4           --3--3---4
-    return (1000000000 + randInt(8999999999)).toString();
+// generate a random date to be used in the database
+function randomDate() {
+    let minDate = new Date(2013,1,1);
+    let maxDate = new Date(2018,12,31);  
+    // set a minimum date add a random number to it
+    // multiply that date by the difference between the min and max date values.  
+    // based on documentation from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
+    var timeStamp = new Date(minDate.getTime() + Math.random() 
+        * (maxDate.getTime() - minDate.getTime()));
+    var year = timeStamp.getFullYear();
+    var month = timeStamp.getMonth() + 1;  // month index value is 0-11 so we must compenstte
+    var day = timeStamp.getDate();
+    return year + '-' + month + '-' + day ;
 }
 
-function genStore() {
-    let store = [];
-    store.push(randInt(9999) +' '+ randNth(streetnames) + ' '
-    +  randNth(['St','Blvd','Cres','Rd','Ct']) + '. ' + 
-    randNth(['Oshawa', 'Toronto','Scarborough']));
-    store.push(randPostalCode());
-    store.push('ON');
-    store.push(randPhoneNumber());
-    return store;
+function genRepairStatus() {
+    let repairStatus = [];
+    repairStatus.push(randomDate());    // part name
+    repairStatus.push(randNth(['true','false'])) // part description
+    repairStatus.push(randomDate());    // item_cost
+    return repairStatus;
 }
 
-exports.seedStores = function() {
+function genRepairInvoice() {
+    let repairInvoice = [];
+    repairInvoice.push(randInt(10));     // member of trade
+    repairInvoice.push(randomDate());    // date of teade
+    repairInvoice.push(randNth(['true','false'])) // signed donation
+    return repairInvoice;
+}
+
+function genRepairItem() {
+    let repairItem = [];
+    repairItem.push(randInt(10));                // invoice to hook to
+    repairItem.push(randInt(50));                // item being donated
+    repairItem.push(randNth(['true','false']));  // is donation?
+    let initialPrice = randPrice(100);
+    repairItem.push(initialPrice);                       // value offered
+    repairItem.push(randNth(['credit', 'cash']));        // payout type
+    repairItem.push(initialPrice*cashPrice);             // final payout
+    return repairItem;
+}
+
+exports.seedTradeTables = function() {
     let client = new Client({
         user: 'pressstartadmin',
         database: 'pressstartdb'
@@ -59,38 +75,24 @@ exports.seedStores = function() {
     // Establish connection
     let queries = client.connect();
     // generate table data
-    let insertStoreSql = 'INSERT INTO tbl_stores(store_address, store_postal_code, '+
-        'store_province, store_phone_number) '+
+    let insertTradeInvoiceSql = 'INSERT INTO tbl_trade_invoices(member_id, employee_id ' +
+    'trade_invoice_date, trade_invoice_signed)'+
         'VALUES($1, $2, $3, $4);';
 
+    let insertTradeInvoiceSql = 'INSERT INTO tbl_trade_invoices(trade_invoice_id, item_id ' +
+    'trade_item_donation, , trade_item_value_offered, trade_item_payout_type,  ' +
+    'trade_item_final_trade_value)'+
+        'VALUES($1, $2, $3, $4, $5, $6);';
+
     // Generate data -> queue up the queries -> close the connection.
-    let stores = Array.from({length: 3}, genStore);
-    for (const store of stores) {
-        queries = queries.then(() => client.query(insertStoreSql, store));
+    let tradeInvoices = Array.from({length: 50}, genTradeInvoice);
+    for (const tradeInvoice of tradeInvoices) {
+        queries = queries.then(() => client.query(insertTradeInvoiceSql, tradeInvoice));
     }
 
-    console.log('Closing Connection for table seed');
-    queries.then(() => client.end());
-}
-
-exports.seedBasicTables = function() {
-    let client = new Client({
-        user: 'pressstartadmin',
-        database: 'pressstartdb'
-    });
-    console.log("Connecting as "+ client.user + ".");
-    // Establish connection
-    let queries = client.connect();
-    // generate table data
-    let insertMemberSql = 'INSERT INTO tbl_members(member_password, member_preffered_store, '+
-        'member_first_name, member_last_name, member_postal_code, '+
-        'member_phone, member_email, member_mailing_list) '+
-        'VALUES($1, $2, $3, $4, $5, $6, $7, $8);';
-
-    // Generate data -> queue up the queries -> close the connection.
-    let members = Array.from({length: 50}, genMember);
-    for (const member of members) {
-        queries = queries.then(() => client.query(insertMemberSql, member));
+    let tradeItems = Array.from({length: 50}, genTradeItem);
+    for (const tradeItem of tradeItems) {
+        queries = queries.then(() => client.query(insertTradeItemSql, tradeItem));
     }
 
     console.log('Closing Connection for table seed');

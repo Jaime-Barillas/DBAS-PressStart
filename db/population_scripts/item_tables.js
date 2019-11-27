@@ -1,7 +1,7 @@
 /*
 Author:     Shaun McCrum
 Created:    19 Nov 2019
-Since:      19 Nov 2019
+Since:      24 Nov 2019
 Description:  Create table data for database tables
 */
 
@@ -166,10 +166,6 @@ exports.seedItemTables = function() {
     // Establish connection
     let queries = client.connect();
     // generate table data
-    let insertItemSql = 'INSERT INTO tbl_items(item_type_id, store_id, '+
-        'condition_id, item_name, item_cost, item_sale_price, '+
-        'item_mrsp, item_stock_quantity, item_description) '+
-        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);';
 
     let insertItemTypeSql = 'INSERT INTO tbl_item_types(item_type_name, '+
         'item_type_description, item_type_value) '+
@@ -191,11 +187,10 @@ exports.seedItemTables = function() {
         'box_condition_description, box_condition_value) '+
         'VALUES($1, $2, $3);';
 
-    // Generate data -> queue up the queries -> close the connection.
-    let items = Array.from({length: 50}, genItem);
-    for (const item of items) {
-        queries = queries.then(() => client.query(insertItemSql, item));
-    }
+    let insertItemSql = 'INSERT INTO tbl_items(item_type_id, store_id, '+
+        'condition_id, item_name, item_cost, item_sale_price, '+
+        'item_mrsp, item_stock_quantity, item_description) '+
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);';
 
     // Generate data -> queue up the queries -> close the connection.
     let itemTypes = Array.from({length: 1}, genItemType);
@@ -225,6 +220,12 @@ exports.seedItemTables = function() {
     let conditions = Array.from({length: 15}, genCondition);
     for (const condition of conditions) {
         queries = queries.then(() => client.query(insertConditionSql, condition));
+    }
+
+    // Generate data -> queue up the queries -> close the connection.
+    let items = Array.from({length: 50}, genItem);
+    for (const item of items) {
+        queries = queries.then(() => client.query(insertItemSql, item));
     }
 
     console.log('Closing Connection for item table seed');
