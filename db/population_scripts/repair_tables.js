@@ -66,33 +66,33 @@ function genRepairItem() {
 }
 
 exports.seedTradeTables = function() {
-    let client = new Client({
-        user: 'pressstartadmin',
-        database: 'pressstartdb'
-    });
-    console.log("Connecting as "+ client.user + ".");
-    // Establish connection
-    let queries = client.connect();
-    // generate table data
-    let insertTradeInvoiceSql = 'INSERT INTO tbl_trade_invoices(member_id, employee_id ' +
-    'trade_invoice_date, trade_invoice_signed)'+
-        'VALUES($1, $2, $3, $4);';
+    // let client = new Client({
+    //     user: 'pressstartadmin',
+    //     database: 'pressstartdb'
+    // });
+    // console.log("Connecting as "+ client.user + ".");
+    // // Establish connection
+    // let queries = client.connect();
+    // // generate table data
+    // let testme = 'INSERT INTO tbl_trade_invoices(member_id, employee_id ' +
+    // 'trade_invoice_date, trade_invoice_signed)'+
+    //     'VALUES($1, $2, $3, $4);';
 
-    let insertTradeInvoiceSql = 'INSERT INTO tbl_trade_invoices(trade_invoice_id, item_id ' +
-    'trade_item_donation, , trade_item_value_offered, trade_item_payout_type,  ' +
-    'trade_item_final_trade_value)'+
-        'VALUES($1, $2, $3, $4, $5, $6);';
+    // let testme2 = 'INSERT INTO tbl_trade_invoices(trade_invoice_id, item_id ' +
+    // 'trade_item_donation, , trade_item_value_offered, trade_item_payout_type,  ' +
+    // 'trade_item_final_trade_value)'+
+    //     'VALUES($1, $2, $3, $4, $5, $6);';
 
-    // Generate data -> queue up the queries -> close the connection.
-    let tradeInvoices = Array.from({length: 50}, genTradeInvoice);
-    for (const tradeInvoice of tradeInvoices) {
-        queries = queries.then(() => client.query(insertTradeInvoiceSql, tradeInvoice));
-    }
+    // // Generate data -> queue up the queries -> close the connection.
+    // let repairStatus = Array.from({length: 50}, genTradeInvoice);
+    // for (const tradeInvoice of tradeInvoices) {
+    //     queries = queries.then(() => client.query(insertTradeInvoiceSql, tradeInvoice));
+    // }
 
-    let tradeItems = Array.from({length: 50}, genTradeItem);
-    for (const tradeItem of tradeItems) {
-        queries = queries.then(() => client.query(insertTradeItemSql, tradeItem));
-    }
+    // let repairStatus = Array.from({length: 50}, genTradeItem);
+    // for (const tradeItem of tradeItems) {
+    //     queries = queries.then(() => client.query(insertTradeItemSql, tradeItem));
+    // }
 
     console.log('Closing Connection for table seed');
     queries.then(() => client.end());
