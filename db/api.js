@@ -250,6 +250,23 @@ exports.Members = {
     },
 
     /**
+     * This function returns all members from the Press Start database.
+     *
+     * @returns An array of all Press Start members.
+     *
+     * @example
+     * // Log all members to the console. It might take a while...
+     * let promise = db.Members.all();
+     * promise.then(allMems => console.log(allMems));
+     *
+     * @memberof module:db/api.Members
+     */
+    all: function() {
+        return pool.query('SELECT * from tbl_members;')
+                   .then(res => res.rows);
+    },
+
+    /**
      * This functions searches members for any records that match the
      * provided contstraints. Constraints are defined as a JS object with
      * properties for the member <code>id</code>, <code>email</code>,
@@ -388,6 +405,23 @@ exports.Employees = {
                                       availability, wage])
                    .then(res => res.rows[0])
                    .catch(_ => null);
+    },
+
+    /**
+     * This function returns all employees from the Press Start database.
+     *
+     * @returns An array of all Press Start employees.
+     *
+     * @example
+     * // Log all employees to the console. It might take a while...
+     * let promise = db.Employees.all();
+     * promise.then(allEmps => console.log(allEmps));
+     *
+     * @memberof module:db/api.Employees
+     */
+    all: function() {
+        return pool.query('SELECT * from tbl_employees;')
+                   .then(res => res.rows);
     },
 
     /**
