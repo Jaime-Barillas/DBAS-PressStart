@@ -1,3 +1,6 @@
+# Ignore documentation
+docs/
+
 # Logs
 logs
 *.log
