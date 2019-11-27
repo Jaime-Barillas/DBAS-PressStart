@@ -77,7 +77,7 @@ exports.seedTradeTables = function() {
     'trade_invoice_date, trade_invoice_signed)'+
         'VALUES($1, $2, $3, $4);';
 
-    let insertTradeInvoiceSql = 'INSERT INTO tbl_trade_invoices(trade_invoice_id, item_id ' +
+    let insertTradeItemSql = 'INSERT INTO tbl_trade_items(trade_invoice_id, item_id ' +
     'trade_item_donation, , trade_item_value_offered, trade_item_payout_type,  ' +
     'trade_item_final_trade_value)'+
         'VALUES($1, $2, $3, $4, $5, $6);';

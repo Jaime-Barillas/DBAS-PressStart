@@ -40,9 +40,8 @@ function randomDate() {
 
 function genRepairStatus() {
     let repairStatus = [];
-    repairStatus.push(randomDate());    // part name
-    repairStatus.push(randNth(['true','false'])) // part description
-    repairStatus.push(randomDate());    // item_cost
+    repairStatus.push(randNth(['open','closed'])) // status name
+    repairStatus.push(randomDate());    // status description
     return repairStatus;
 }
 
