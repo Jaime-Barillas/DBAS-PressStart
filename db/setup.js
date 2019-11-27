@@ -46,11 +46,6 @@ const tradeTables = require("./population_scripts/trade_tables");
 const repairTables = require("./population_scripts/repair_tables");
 const reservationTables = require("./population_scripts/reservation_tables");
 
-//Imported object data
-/* const firstNames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/population_scripts', 'firstnames-short.json'), 'utf8'));
-const lastNames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/population_scripts', 'lastnames-short.json'), 'utf8'));
-const streetnames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/population_scripts', 'streetnames.json'), 'utf8')); */
-
 /*======= Functions =======*/
 function setupDatabase() {
     let client = new Client({

@@ -34,7 +34,7 @@ exports.setupTables = function() {
         customer_id integer,
         employee_id integer,
         store_id integer,
-        sale_invoice_date timestamp,
+        sale_invoice_date timestamp
         );`)
         .then(() => client.end());
 }

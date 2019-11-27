@@ -213,7 +213,7 @@ exports.seedItemTables = function() {
     // Generate data -> queue up the queries -> close the connection.
     let physicalConditions = Array.from({length: 4}, genPhysicalCondition);
     for (const physicalCondition of physicalConditions) {
-        queries = queries.then(() => client.query(insertMhysicalConditionSql, physicalCondition));
+        queries = queries.then(() => client.query(insertPhysicalConditionSql, physicalCondition));
     }
 
     // Generate data -> queue up the queries -> close the connection.

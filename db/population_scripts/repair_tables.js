@@ -65,7 +65,8 @@ function genRepairItem() {
     return repairItem;
 }
 
-exports.seedTradeTables = function() {
+exports.seedRepairTables = function() {
+
     // let client = new Client({
     //     user: 'pressstartadmin',
     //     database: 'pressstartdb'
