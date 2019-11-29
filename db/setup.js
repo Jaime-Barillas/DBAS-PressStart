@@ -111,7 +111,7 @@ function seedTables() {
     console.log('Seeding Tables.')
     return basicTables.seedBasicTables()
     //.then (() => itemTables.seedItemTables())
-    //.then (() => saleTables.seedSaleTables())
+    //.then (() => saleTables.seedSalesTables())
     //.then (() => repairTables.seedRepairTables())
     //.then (() => tradeTables.seedTradeTables())
     //.then (() => itemTables.seedReservationTables())
@@ -136,9 +136,10 @@ switch(process.argv[2]) {
         console.log('Performing full setup of the Press Start database...');
         setupDatabase()
             .then(() => setupTables())
+            .then(() => console.log('Table Setup... Done!'))
             .then(() => seedTables())
+            .then(() => console.log('Table Seeding... Done!'))
             ;
-        console.log('Done!');
         break;
 }
 

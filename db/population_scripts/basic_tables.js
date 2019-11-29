@@ -181,7 +181,7 @@ exports.seedBasicTables = function() {
         user: 'pressstartadmin',
         database: 'pressstartdb'
     });
-    console.log("Connecting as "+ client.user + ".");
+    console.log("Connected for seed as "+ client.user + ".");
     // Establish connection
     let queries = client.connect();
     // generate table data
@@ -197,7 +197,7 @@ exports.seedBasicTables = function() {
         'employee_availability, employee_wage, employee_manager) '+
         'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);';
     let insertNewsSQL = 'INSERT INTO tbl_news(news_title, news_date_added, news_article, news_front_page)'+
-    'VALUES($1, $2, $3, $4);';
+        'VALUES($1, $2, $3, $4);';
 
     // Generate data -> queue up the queries -> close the connection.
     let stores = Array.from({length: 3}, genStore);
@@ -219,8 +219,7 @@ exports.seedBasicTables = function() {
     for (const newsItem of news) {
         queries = queries.then(() => client.query(insertNewsSQL, newsItem));
     }
-
-
+    
     console.log('Closing Connection for basic table seed');
     queries.then(() => client.end());
 }

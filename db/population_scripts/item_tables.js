@@ -164,6 +164,7 @@ exports.seedItemTables = function() {
     });
     console.log("Connecting as "+ client.user + ".");
     // Establish connection
+    client.connect();
     let queries = client.connect();
     // generate table data
 

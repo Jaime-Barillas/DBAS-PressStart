@@ -74,12 +74,12 @@ exports.seedTradeTables = function() {
     let queries = client.connect();
     // generate table data
     let insertTradeInvoiceSql = 'INSERT INTO tbl_trade_invoices(member_id, employee_id ' +
-    'trade_invoice_date, trade_invoice_signed)'+
+        'trade_invoice_date, trade_invoice_signed)'+
         'VALUES($1, $2, $3, $4);';
 
     let insertTradeItemSql = 'INSERT INTO tbl_trade_items(trade_invoice_id, item_id ' +
-    'trade_item_donation, , trade_item_value_offered, trade_item_payout_type,  ' +
-    'trade_item_final_trade_value)'+
+        'trade_item_donation, trade_item_value_offered, trade_item_payout_type,  ' +
+        'trade_item_final_trade_value)'+
         'VALUES($1, $2, $3, $4, $5, $6);';
 
     // Generate data -> queue up the queries -> close the connection.

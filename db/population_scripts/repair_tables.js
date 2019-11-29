@@ -9,6 +9,9 @@ const fs = require('fs');
 const path = require('path');
 
 const { Client } = require('pg');
+const repairClientDescription = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'repairDescriptions.json'), 'utf8'));
+const repairDescription = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'repairInvoiceDescriptions.json'), 'utf8'));
+
 
 function randInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
@@ -23,78 +26,71 @@ function randPrice(max) {
     return (Math.random() * max).toFixed(2);
 }
 
-// generate a random date to be used in the database
-function randomDate() {
-    let minDate = new Date(2013,1,1);
-    let maxDate = new Date(2018,12,31);  
-    // set a minimum date add a random number to it
-    // multiply that date by the difference between the min and max date values.  
-    // based on documentation from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
-    var timeStamp = new Date(minDate.getTime() + Math.random() 
-        * (maxDate.getTime() - minDate.getTime()));
-    var year = timeStamp.getFullYear();
-    var month = timeStamp.getMonth() + 1;  // month index value is 0-11 so we must compenstte
-    var day = timeStamp.getDate();
-    return year + '-' + month + '-' + day ;
-}
-
 function genRepairStatus() {
     let repairStatus = [];
-    repairStatus.push(randNth(['open','closed'])) // status name
-    repairStatus.push(randomDate());    // status description
+    repairStatus.push(randNth(['open','closed']))       // status name
+    repairStatus.push(randNth(repairClientDescription));      // status description
     return repairStatus;
 }
 
 function genRepairInvoice() {
     let repairInvoice = [];
-    repairInvoice.push(randInt(10));     // member of trade
-    repairInvoice.push(randomDate());    // date of teade
-    repairInvoice.push(randNth(['true','false'])) // signed donation
+    repairInvoice.push(randInt(50));     // customer_id
+    repairInvoice.push(randInt(10));     // employee_id
+    repairInvoice.push(randNth(10));     // repair_status_id
+    repairInvoice.push(randNth(repairDescription));     // repair_invoice_description
+    repairInvoice.push(randNth(8));      // repair_invoice_labour_hours
+    repairInvoice.push(45);              // repair_invoice_cost hard coded labour cost
     return repairInvoice;
 }
 
 function genRepairItem() {
     let repairItem = [];
-    repairItem.push(randInt(10));                // invoice to hook to
-    repairItem.push(randInt(50));                // item being donated
-    repairItem.push(randNth(['true','false']));  // is donation?
-    let initialPrice = randPrice(100);
-    repairItem.push(initialPrice);                       // value offered
-    repairItem.push(randNth(['credit', 'cash']));        // payout type
-    repairItem.push(initialPrice*cashPrice);             // final payout
+    repairItem.push(randInt(10));                    // repair_invoice_id
+    repairItem.push(randNth(['Optical Drive', 'Power Cable', 'LR44 Battery', 'Controller Pad', '1TB Hard drive']));    // repair_part_name
+    repairItem.push(randNth(repairInvoiceDescription));    // repair_part_description
+    repairItem.push(randPrice(99));                    // repair_item_cost
     return repairItem;
 }
 
 exports.seedRepairTables = function() {
 
-    // let client = new Client({
-    //     user: 'pressstartadmin',
-    //     database: 'pressstartdb'
-    // });
-    // console.log("Connecting as "+ client.user + ".");
-    // // Establish connection
-    // let queries = client.connect();
-    // // generate table data
-    // let testme = 'INSERT INTO tbl_trade_invoices(member_id, employee_id ' +
-    // 'trade_invoice_date, trade_invoice_signed)'+
-    //     'VALUES($1, $2, $3, $4);';
+    let client = new Client({
+        user: 'pressstartadmin',
+        database: 'pressstartdb'
+    });
+    console.log("Connecting for seed as "+ client.user + ".");
+    // Establish connection
+    let queries = client.connect();
+    // generate table data
+    let insertRepairStatusSql = 'INSERT INTO tbl_repair_status(repair_status_name, repair_status_description)'+
+        'VALUES($1, $2);';
 
-    // let testme2 = 'INSERT INTO tbl_trade_invoices(trade_invoice_id, item_id ' +
-    // 'trade_item_donation, , trade_item_value_offered, trade_item_payout_type,  ' +
-    // 'trade_item_final_trade_value)'+
-    //     'VALUES($1, $2, $3, $4, $5, $6);';
+    let insertRepairInvoiceSqL = 'INSERT INTO tbl_repair_invoices(customer_id, employee_id ' +
+        'repair_status_id, repair_invoice_description, repair_invoice_labour_hours,  ' +
+        'repair_invoice_labour_hours_cost)'+
+        'VALUES($1, $2, $3, $4, $5, $6);';
 
-    // // Generate data -> queue up the queries -> close the connection.
-    // let repairStatus = Array.from({length: 50}, genTradeInvoice);
-    // for (const tradeInvoice of tradeInvoices) {
-    //     queries = queries.then(() => client.query(insertTradeInvoiceSql, tradeInvoice));
-    // }
+    let insertRepairItemSql = 'INSERT INTO tbl_repair_items(repair_invoice_id, repair_part_name ' +
+        'repair_part_description, repair_item_cost)'+
+        'VALUES($1, $2, $3, $4);';    
 
-    // let repairStatus = Array.from({length: 50}, genTradeItem);
-    // for (const tradeItem of tradeItems) {
-    //     queries = queries.then(() => client.query(insertTradeItemSql, tradeItem));
-    // }
+    // Generate data -> queue up the queries -> close the connection.
+    let repairStatus = Array.from({length: 50}, genRepairStatus);
+    for (const repairState of repairStatus) {
+        queries = queries.then(() => client.query(insertRepairStatusSql, repairState));
+    }
 
-    console.log('Closing Connection for table seed');
+    let repairInvoices = Array.from({length: 50}, genRepairInvoice);
+    for (const repairInvoice of repairInvoices) {
+        queries = queries.then(() => client.query(insertRepairInvoiceSqL, repairInvoice));
+    }
+
+    let repairItems = Array.from({length: 50}, genRepairItem);
+    for (const repairItem of repairItems) {
+        queries = queries.then(() => client.query(insertRepairItemSql, repairItems));
+    }
+
+    console.log('Closing Connection for repair table seed');
     queries.then(() => client.end());
 }
