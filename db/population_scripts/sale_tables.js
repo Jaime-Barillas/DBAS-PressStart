@@ -77,7 +77,7 @@ function genSaleItem() {
     // }));
     //console.log("Price is " +  JSON.stringify(itemPrice));
     //client.end();
-    saleItem.push(20);  //item_id
+    saleItem.push(randInt(30));  //item_id
     saleItem.push(randInt(10));  //invoice_id
     saleItem.push(randInt(4));   //item_quantity
     //saleItem.push(item * itemPrice[1]);  //sale_price
