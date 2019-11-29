@@ -35,12 +35,13 @@ exports.setupTables = function() {
         item_type_id integer,
         store_id integer,
         condition_id integer,
-        item_name varchar(20),
+        item_name varchar(64),
         item_cost money,
         item_sale_price money,
         item_mrsp money,
         item_stock_quantity smallint,
-        item_description varchar(120)
+        item_description varchar(128)
         );`)
+        .then(() => console.log("items Table Created"))
         .then(() => client.end());
 }

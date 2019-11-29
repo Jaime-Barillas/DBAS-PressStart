@@ -44,6 +44,7 @@ exports.setupTables = function() {
         employee_wage money,
         employee_manager boolean
         );`)
+        .then(() => console.log("employees Table Created"))
         .then(() => client.end())
         ;
 }

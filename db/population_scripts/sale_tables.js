@@ -38,23 +38,50 @@ function randNth(array) {
 
 function genSaleInvoice() {
     let saleInvoice = [];
-    invoice.push(randInt(50));  //member_id
-    invoice.push(randInt(10));  //employee_id
-    invoice.push(randInt(2));   //store_id
-    invoice.push(randomDate()); //invoice date
+    saleInvoice.push(randInt(50));  //member_id
+    saleInvoice.push(randInt(10));  //employee_id
+    saleInvoice.push(randInt(2));   //store_id
+    saleInvoice.push(randomDate()); //invoice date
     return saleInvoice;
 }
 
 function genSaleItem() {
+    let client = new Client({
+        user: 'pressstartadmin',
+        database: 'pressstartdb'
+    });
     let saleItem = [];
     let item = randInt(50);
-    let getItemPriceSql = 'SELECT item_id, item_sale_price FROM tbl_items WHERE item_id = $1 '+
-        'VALUES($1);';
-    itemPrice = itemPrice.then(() => client.query(getItemPriceSql, item));
-    saleItem.push(item);  //item_id
+    
+    
+    // let itemQuery = client.connect();
+
+    // const sql = 'SELECT item_sale_price FROM tbl_items WHERE item_id = $1';
+    // const values = [5];
+    // itemQuery = client.query(sql, values).then(res => {
+
+    //     const data = res.rows;
+
+    //     data.forEach(row => console.log(row));
+
+    // }).finally(() => {
+    //     client.end()
+    // });
+
+
+    // let getItemPriceSql = 'SELECT item_sale_price FROM tbl_items WHERE item_id  $1' ;
+    // itemPrice = itemQuery.then(() => client.query(getItemPriceSql, item).then(res => {
+    //     const data = res.rows;
+
+    //     data.forEach(row => console.log(row));
+    // }));
+    //console.log("Price is " +  JSON.stringify(itemPrice));
+    //client.end();
+    saleItem.push(20);  //item_id
     saleItem.push(randInt(10));  //invoice_id
     saleItem.push(randInt(4));   //item_quantity
-    saleItem.push(item *itemPrice[1]);  //sale_price
+    //saleItem.push(item * itemPrice[1]);  //sale_price
+    saleItem.push(item * 49.99);  //sale_price
     return saleItem;
 }
 
@@ -69,8 +96,8 @@ exports.seedSalesTables = function() {
     let queries = client.connect();
     // generate table data
     let insertSaleInvoiceSql = 'INSERT INTO tbl_sale_invoices(member_id, employee_id, '+
-        'store_id, sale_invoice_date, sale_invoice_trade_value_paid) '+
-        'VALUES($1, $2, $3, $4, $5, $6;';
+        'store_id, sale_invoice_date) '+
+        'VALUES($1, $2, $3, $4);';
 
     let insertSaleItemSql = 'INSERT INTO tbl_sale_items(item_id, invoice_id, ' +
         'sale_item_quantity, sale_item_price) '+
@@ -84,10 +111,10 @@ exports.seedSalesTables = function() {
 
     // Generate data -> queue up the queries -> close the connection.
     let saleItems = Array.from({length: 30}, genSaleItem);
-    for (const invoice of saleItems) {
+    for (const saleItem of saleItems) {
         queries = queries.then(() => client.query(insertSaleItemSql, saleItem));
     }
 
-    console.log('Closing Connection for table seed');
-    queries.then(() => client.end());
+    console.log('Closing Connection for sales table seed');
+    return queries.then(() => client.end());
 }

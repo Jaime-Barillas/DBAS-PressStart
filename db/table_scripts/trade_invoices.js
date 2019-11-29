@@ -31,9 +31,10 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_trade_invoices(
         trade_invoice_id serial PRIMARY KEY,
-        customer_id integer,
+        member_id integer,
         trade_invoice_date timestamp,
         trade_invoice_signed boolean
         );`)
+        .then(() => console.log("trade_invoices Table Created"))
         .then(() => client.end());
 }

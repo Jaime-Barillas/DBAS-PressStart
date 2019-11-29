@@ -51,7 +51,7 @@ function genReservationItem() {
     return reserveItem;
 }
 
-exports.seedReservationsTables = function() {
+exports.seedReservationTables = function() {
     let client = new Client({
         user: 'pressstartadmin',
         database: 'pressstartdb'
@@ -59,7 +59,7 @@ exports.seedReservationsTables = function() {
     console.log("Connecting as "+ client.user + ".");
     // Establish connection
     let queries = client.connect();
-    // generate table data
+    // generate table data tbl_reservations
     let insertReservationSql = 'INSERT INTO tbl_reservations(store_id, '+
         'member_id, reservation_date_reserved, reservation_received) '+
         'VALUES($1, $2, $3, $4);';
@@ -79,6 +79,6 @@ exports.seedReservationsTables = function() {
         queries = queries.then(() => client.query(insertReservationItemSql, reserveItem));
     }
 
-    console.log('Closing Connection for table seed');
-    queries.then(() => client.end());
+    console.log('Closing Connection for reservation table seed');
+    return queries.then(() => client.end());
 }

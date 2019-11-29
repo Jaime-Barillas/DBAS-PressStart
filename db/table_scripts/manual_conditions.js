@@ -32,8 +32,9 @@ exports.setupTables = function() {
     return client.query(`CREATE TABLE tbl_manual_conditions(
         manual_condition_id serial PRIMARY KEY,
         manual_condition_name varchar(20),
-        manual_condition_description varchar(50),
+        manual_condition_description varchar(64),
         manual_condition_value decimal (8,2)
         );`)
+        .then(() => console.log("manual_conditions Table Created"))
         .then(() => client.end());
 }

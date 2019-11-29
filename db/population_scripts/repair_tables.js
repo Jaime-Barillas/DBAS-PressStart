@@ -48,7 +48,7 @@ function genRepairItem() {
     let repairItem = [];
     repairItem.push(randInt(10));                    // repair_invoice_id
     repairItem.push(randNth(['Optical Drive', 'Power Cable', 'LR44 Battery', 'Controller Pad', '1TB Hard drive']));    // repair_part_name
-    repairItem.push(randNth(repairInvoiceDescription));    // repair_part_description
+    repairItem.push(randNth(repairDescription));    // repair_part_description
     repairItem.push(randPrice(99));                    // repair_item_cost
     return repairItem;
 }
@@ -66,31 +66,31 @@ exports.seedRepairTables = function() {
     let insertRepairStatusSql = 'INSERT INTO tbl_repair_status(repair_status_name, repair_status_description)'+
         'VALUES($1, $2);';
 
-    let insertRepairInvoiceSqL = 'INSERT INTO tbl_repair_invoices(customer_id, employee_id ' +
+    let insertRepairInvoiceSqL = 'INSERT INTO tbl_repair_invoices(customer_id, employee_id, ' +
         'repair_status_id, repair_invoice_description, repair_invoice_labour_hours,  ' +
         'repair_invoice_labour_hours_cost)'+
         'VALUES($1, $2, $3, $4, $5, $6);';
 
-    let insertRepairItemSql = 'INSERT INTO tbl_repair_items(repair_invoice_id, repair_part_name ' +
-        'repair_part_description, repair_item_cost)'+
+    let insertRepairItemSql = 'INSERT INTO tbl_repair_items(repair_invoice_id, repair_part_name, ' +
+        'repair_item_part_description, repair_item_cost)'+
         'VALUES($1, $2, $3, $4);';    
 
     // Generate data -> queue up the queries -> close the connection.
-    let repairStatus = Array.from({length: 50}, genRepairStatus);
+    let repairStatus = Array.from({length: 4}, genRepairStatus);
     for (const repairState of repairStatus) {
         queries = queries.then(() => client.query(insertRepairStatusSql, repairState));
     }
 
-    let repairInvoices = Array.from({length: 50}, genRepairInvoice);
+    let repairInvoices = Array.from({length:30}, genRepairInvoice);
     for (const repairInvoice of repairInvoices) {
         queries = queries.then(() => client.query(insertRepairInvoiceSqL, repairInvoice));
     }
 
     let repairItems = Array.from({length: 50}, genRepairItem);
     for (const repairItem of repairItems) {
-        queries = queries.then(() => client.query(insertRepairItemSql, repairItems));
+        queries = queries.then(() => client.query(insertRepairItemSql, repairItem));
     }
 
     console.log('Closing Connection for repair table seed');
-    queries.then(() => client.end());
+    return queries.then(() => client.end());
 }

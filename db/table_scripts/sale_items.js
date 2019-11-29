@@ -36,5 +36,6 @@ exports.setupTables = function() {
         sale_item_quantity smallint,
         sale_item_price money
         );`)
+        .then(() => console.log("sale_items Table Created"))
         .then(() => client.end());
 }

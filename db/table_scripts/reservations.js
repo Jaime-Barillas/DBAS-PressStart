@@ -32,9 +32,10 @@ exports.setupTables = function() {
     return client.query(`CREATE TABLE tbl_reservations(
         reservation_id serial PRIMARY KEY,
         store_id integer,
-        customer_id integer,
-        reservation_date_reserved timestamp
+        member_id integer,
+        reservation_date_reserved timestamp,
         reservation_received boolean
         );`)
+        .then(() => console.log("reservations Table Created"))
         .then(() => client.end());
 }

@@ -102,7 +102,10 @@ function setupTables() {
     .then (() => repaiItemsFunction.dropTables())
     .then (() => repaiItemsFunction.setupTables())
     .then (() => reservationFunction.dropTables())
+    .then (() => reservationFunction.setupTables())
+    .then (() => reservationItemFunction.dropTables())
     .then (() => reservationItemFunction.setupTables()) 
+    .catch(console.log.bind(console))
     ;
 }
 
@@ -110,11 +113,12 @@ function setupTables() {
 function seedTables() {
     console.log('Seeding Tables.')
     return basicTables.seedBasicTables()
-    //.then (() => itemTables.seedItemTables())
-    //.then (() => saleTables.seedSalesTables())
-    //.then (() => repairTables.seedRepairTables())
-    //.then (() => tradeTables.seedTradeTables())
-    //.then (() => itemTables.seedReservationTables())
+    .then (() => itemTables.seedItemTables())
+    .then (() => saleTables.seedSalesTables())
+    .then (() => repairTables.seedRepairTables())
+    .then (() => tradeTables.seedTradeTables())
+    .then (() => reservationTables.seedReservationTables())
+    .catch(console.log.bind(console))
     ;
 }
 

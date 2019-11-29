@@ -31,10 +31,11 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_sale_invoices(
         invoide_id serial PRIMARY KEY,
-        customer_id integer,
+        member_id integer,
         employee_id integer,
         store_id integer,
         sale_invoice_date timestamp
         );`)
+        .then(() => console.log("sale_invoices Table Created"))
         .then(() => client.end());
 }

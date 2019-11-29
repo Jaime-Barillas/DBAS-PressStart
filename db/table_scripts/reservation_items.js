@@ -34,5 +34,6 @@ exports.setupTables = function() {
         reservation_id integer,
         item_id integer
         );`)
+        .then(() => console.log("reservation_items Table Created"))
         .then(() => client.end());
 }
