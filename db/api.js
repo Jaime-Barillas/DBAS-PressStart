@@ -513,3 +513,44 @@ exports.Employees = {
         return result.then(res => res.rows);
     }
 }
+
+/**
+ * A collection of functions for retrieving data to generate reports.
+ *
+ * @namespace
+ */
+exports.Reports = {
+    /**
+     * This functions retrieves report data for <em>each</em> item sale.
+     * In other words, each sale to a customer has its own entry in the
+     * returned data. The returned data is an array with objects of the format:
+     * <br/>
+     * <code>
+     * {
+     *     items_report_name: blah,
+     *     items_report_quantity: blah,
+     *     items_report_price: blah,
+     *     store_id: blah,
+     *     items_report_date: blah
+     * }
+     * </code>
+     *
+     * @summary Retrieves sale data about items. You probably
+     * <strong>don't</strong> want to use this function directly.
+     *
+     * @returns An array of JavaScript objects containing the item name, sale
+     * quantity, sale price, store id, and sale date.
+     *
+     * @example
+     * let promise = Reports.getPaginated();
+     * promise.then(items => console.log(items));
+     *
+     * @memberof module:db/api.Reports
+     */
+    itemsReportData: function() {
+        const getAllSql = 'SELECT * FROM items_report;';
+
+        return pool.query(getAllSql)
+                   .then(res => res.rows);
+    }
+}
