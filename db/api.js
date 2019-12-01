@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const { Pool } = require('pg');
 
 var pool;
@@ -542,7 +545,7 @@ exports.Reports = {
      * quantity, sale price, store id, and sale date.
      *
      * @example
-     * let promise = Reports.getPaginated();
+     * let promise = Reports.itemsReportData();
      * promise.then(items => console.log(items));
      *
      * @memberof module:db/api.Reports
@@ -551,6 +554,36 @@ exports.Reports = {
         const getAllSql = 'SELECT * FROM items_report;';
 
         return pool.query(getAllSql)
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This functions retrieves report data the last month of sales. The
+     * returned data is an array that contains objects of the format:
+     * <br/>
+     * <code>
+     * {
+     *     item_name: blah,
+     *     total_sold: blah,
+     *     total_revenue: blah
+     * }
+     * </code>
+     *
+     * @summary Retrieves sale data about items for the last month.
+     *
+     * @returns An array of JavaScript objects containing the item name,
+     * total sold, and total revenue.
+     *
+     * @example
+     * let promise = Reports.monthlyReport();
+     * promise.then(items => console.log(items));
+     *
+     * @memberof module:db/api.Reports
+     */
+    monthlyReport() {
+        let monthlyReportSql = fs.readFileSync(path.resolve(__dirname, 'views/monthly_sales_report.sql'), 'utf8');
+
+        return pool.query(monthlyReportSql)
                    .then(res => res.rows);
     }
 }
