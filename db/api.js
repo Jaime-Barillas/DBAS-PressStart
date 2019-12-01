@@ -516,6 +516,162 @@ exports.Trades = {
 }
 
 /**
+ * A collection of functions for interacting with Press Start reservations.
+ *
+ * @namespace
+ */
+exports.Reservations = {
+
+    /**
+     * This function returns the id, store id, and date reserved of all reservations.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     reservation_id: blah,
+     *     store_id: blah,
+     *     reservation_date_reserved: blah
+     * }
+     * </code></pre>
+     *
+     * @returns An array of all Press Start reservations.
+     *
+     * @example
+     * let promise = db.Reservations.all();
+     * promise.then(allReservations => console.log(allReservations));
+     *
+     * @memberof module:db/api.Reservations
+     */
+    all: function() {
+        return pool.query('SELECT reservation_id, store_id, reservation_date_reserved FROM tbl_reservations;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This functions searches trade ins for any records that match the
+     * provided contstraints. Constraints are defined as a JS object with
+     * properties for the trade invoice <code>id</code>, <code>memberFirstName</code>,
+     * or <code>memberLastName</code>. It is an error to
+     * provide an empty object or an object without at least one of the
+     * mentioned properties.
+     * <br/><br/>
+     * The <code>memberFirstName</code> and <code>memberLastName</code>
+     * properties are case-insensitive patterns that need to only match part
+     * of their respective attributes. See examples for more info.
+     * <br/><br/>
+     * Only one of the properties is required, but if multiple are present,
+     * then they will act as filters resulting in more specific results. Of
+     * course, if the <code>id</code> property is present, then it will
+     * supersede the other properties and return the item it directly
+     * corresponds to.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     reservation_id: blah,
+     *     reservation_member_name: blah,
+     *     reservation_date_reserved: blah,
+     *     reservation_received: blah,
+     *     store_id: blah
+     * }
+     * </code></pre>
+     *
+     * @summary Searches for reservations from the Press Start database.
+     *
+     * @param {Object} reservationDetails - An object containing the reservation
+     *     id, memberFirstName or memberLastName
+     *     (or any combination of the three!)
+     * @param {Number} reservationDetails.id - The id of the desired reservation.
+     * @param {String} reservationDetails.memberFirstName - The first name of the reservation's member.
+     * @param {String} reservationDetails.memberLastName - The last name of the reservation's member.
+     *
+     * @returns An array of matching items, empty if no items were found.
+     * @throws Error If none of the mentioned properties were present in the
+     *     passed in object.
+     *
+     * @example
+     * // Return the Reservation with id 5.
+     * let promise = Reservations.search({id: 5});
+     * @example
+     * // Return all Reservations with an associated member with a first name that starts with 'al'.
+     * let promise = Reservations.search({firstName: 'al'}); // e.g. member with first name: alphonse
+     * @example
+     * // Return all Reservations with an associated member whose first name starts with 'al' and last name
+     * // starts with 'do'.
+     * let promise = Reservations.search({firstName: 'al', lastName: 'do'}); // e.g. member: alphonse, dosomething
+     *
+     * @memberof module:db/api.Reservations
+     */
+    search: function({id, memberFirstName, memberLastName}) {
+        // TODO: Parameter validation.
+        const searchByIdSql = fs.readFileSync(path.resolve(__dirname, 'queries/reservations_search_by_id.sql'), 'utf8');
+
+        let result;
+
+        if (id) {
+            result = pool.query(searchByIdSql, [id]);
+        } else {
+            // Each constraint will be appended to this sql.
+            let searchSql = fs.readFileSync(path.resolve(__dirname, 'queries/reservations_search_by_name.sql'), 'utf8');
+            // Filter out any null or undefined values.
+            // These entries provide an ordered mapping from column name to
+            // the search pattern.
+            let entries = [
+                ['tbl_members.member_first_name', memberFirstName],
+                ['tbl_members.member_last_name', memberLastName]
+            ].filter(([_, value]) => !!value);
+
+            // We must have at least one of memberFirstName, or memberLastName.
+            if (entries.length === 0) {
+                throw new Error('Must specify at least one of: id, memberFirstName, or memberLastName');
+            }
+
+            // The meat of the function:
+
+            // The first entry will be added to the where clause
+            // but all subsequent entries must have an AND prepended.
+            let [first, ...rest] = entries;
+
+            searchSql += `${first[0]} ILIKE $1 || '%'`;
+            for (var i = 0; i < rest.length; i++) {
+                searchSql += ` AND ${rest[i][0]} ILIKE $${i + 2} || '%'`;
+            }
+            searchSql += ';';
+
+            result = pool.query(searchSql, entries.map(entry => entry[1]));
+        }
+
+        return result.then(res => res.rows);
+    },
+
+    /**
+     * This functions retrieves the contents of the tbl_reservation_items table for
+     * a specific reservation.
+     *
+     * @summary Retrieves the line items for a reservation.
+     *
+     * @param {Number} id - The id of the reservation for which you want the line items of.
+     *
+     * @returns An array of line items, empty if no items were found.
+     * @throws Error If the id was not provided.
+     *
+     * @example
+     * let promise = Reservations.lineItems(1);
+     * promise.then(lineItems => console.log(lineItems));
+     *
+     * @memberof module:db/api.Reservations
+     */
+    lineItems: function(id) {
+        if (id === null || id === undefined || id < 1) {
+            throw new Error('Must specify an id (greater than 0)!');
+        }
+
+        return pool.query('SELECT * FROM tbl_reservation_items WHERE reservation_id = $1', [id])
+                   .then(res => res.rows);
+    }
+}
+
+/**
  * A collection of functions for interacting with Press Start member accounts.
  * Contains functions to create and search members.
  *
