@@ -30,7 +30,7 @@ exports.setupTables = function() {
     client.connect();
     // generate table
     return client.query(`CREATE TABLE tbl_sale_invoices(
-        invoide_id serial PRIMARY KEY,
+        invoice_id serial PRIMARY KEY,
         member_id integer,
         employee_id integer,
         store_id integer,
