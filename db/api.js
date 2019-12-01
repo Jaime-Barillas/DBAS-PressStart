@@ -337,6 +337,133 @@ exports.Repairs = {
 }
 
 /**
+ * A collection of functions for interacting with Press Start trade ins.
+ *
+ * @namespace
+ */
+exports.Trades = {
+
+    /**
+     * This function returns the id and date of all trades.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     trade_invoice_id: blah,
+     *     trade_invoice_date: blah
+     * }
+     * </code></pre>
+     *
+     * @returns An array of all Press Start trade ins.
+     *
+     * @example
+     * let promise = db.Trades.all();
+     * promise.then(allTrades => console.log(allTrades));
+     *
+     * @memberof module:db/api.Trades
+     */
+    all: function() {
+        return pool.query('SELECT trade_invoice_id, trade_invoice_date FROM tbl_trade_invoices;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This functions searches trade ins for any records that match the
+     * provided contstraints. Constraints are defined as a JS object with
+     * properties for the trade invoice <code>id</code>, <code>memberFirstName</code>,
+     * or <code>memberLastName</code>. It is an error to
+     * provide an empty object or an object without at least one of the
+     * mentioned properties.
+     * <br/><br/>
+     * The <code>memberFirstName</code> and <code>memberLastName</code>
+     * properties are case-insensitive patterns that need to only match part
+     * of their respective attributes. See examples for more info.
+     * <br/><br/>
+     * Only one of the properties is required, but if multiple are present,
+     * then they will act as filters resulting in more specific results. Of
+     * course, if the <code>id</code> property is present, then it will
+     * supersede the other properties and return the item it directly
+     * corresponds to.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     trade_id: blah,
+     *     trade_date: blah,
+     *     trade_member_name: blah
+     * }
+     * </code></pre>
+     *
+     * @summary Searches for trade-ins from the Press Start database.
+     *
+     * @param {Object} tradeDetails - An object containing the trade invoice
+     *     id, memberFirstName or memberLastName of the desired trade order
+     *     (or any combination of the three!)
+     * @param {Number} tradeDetails.id - The id of the desired trade invoice.
+     * @param {String} tradeDetails.memberFirstName - The first name of the trade's member.
+     * @param {String} tradeDetails.memberLastName - The last name of the trade's member.
+     *
+     * @returns An array of matching items, empty if no items were found.
+     * @throws Error If none of the mentioned properties were present in the
+     *     passed in object.
+     *
+     * @example
+     * // Return the Trade with id 5.
+     * let promise = Trades.search({id: 5});
+     * @example
+     * // Return all Trades with an associated member with a first name that starts with 'al'.
+     * let promise = Trades.search({firstName: 'al'}); // e.g. member with first name: alphonse
+     * @example
+     * // Return all Trades with an associated member whose first name starts with 'al' and last name
+     * // starts with 'do'.
+     * let promise = Trades.search({firstName: 'al', lastName: 'do'}); // e.g. member: alphonse, dosomething
+     *
+     * @memberof module:db/api.Trades
+     */
+    search: function({id, memberFirstName, memberLastName}) {
+        // TODO: Parameter validation.
+        const searchByIdSql = fs.readFileSync(path.resolve(__dirname, 'queries/trades_search_by_id.sql'), 'utf8');
+
+        let result;
+
+        if (id) {
+            result = pool.query(searchByIdSql, [id]);
+        } else {
+            // Each constraint will be appended to this sql.
+            let searchSql = fs.readFileSync(path.resolve(__dirname, 'queries/trades_search_by_name.sql'), 'utf8');
+            // Filter out any null or undefined values.
+            // These entries provide an ordered mapping from column name to
+            // the search pattern.
+            let entries = [
+                ['tbl_members.member_first_name', memberFirstName],
+                ['tbl_members.member_last_name', memberLastName]
+            ].filter(([_, value]) => !!value);
+
+            // We must have at least one of memberFirstName, or memberLastName.
+            if (entries.length === 0) {
+                throw new Error('Must specify at least one of: id, memberFirstName, or memberLastName');
+            }
+
+            // The meat of the function:
+
+            // The first entry will be added to the where clause
+            // but all subsequent entries must have an AND prepended.
+            let [first, ...rest] = entries;
+
+            searchSql += `${first[0]} ILIKE $1 || '%'`;
+            for (var i = 0; i < rest.length; i++) {
+                searchSql += ` AND ${rest[i][0]} ILIKE $${i + 2} || '%'`;
+            }
+            searchSql += ';';
+
+            result = pool.query(searchSql, entries.map(entry => entry[1]));
+        }
+
+        return result.then(res => res.rows);
+    }
+}
+
+/**
  * A collection of functions for interacting with Press Start member accounts.
  * Contains functions to create and search members.
  *
