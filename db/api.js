@@ -216,6 +216,14 @@ exports.Repairs = {
 
     /**
      * This function returns the id and description of all repairs.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     repair_invoice_id: blah,
+     *     repair_invoice_description: blah
+     * }
+     * </code></pre>
      *
      * @returns An array of all Press Start repairs.
      *
@@ -247,6 +255,17 @@ exports.Repairs = {
      * course, if the <code>id</code> property is present, then it will
      * supersede the other properties and return the item it directly
      * corresponds to.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     repair_id: blah,
+     *     repair_description: blah,
+     *     repair_member_name: blah,
+     *     repair_employee_name: blah,
+     *     repair_status: blah
+     * }
+     * </code></pre>
      *
      * @summary Searches for repair order from the Press Start database.
      *
