@@ -460,6 +460,32 @@ exports.Trades = {
         }
 
         return result.then(res => res.rows);
+    },
+
+    /**
+     * This functions retrieves the contents of the tbl_trade_items table for
+     * a specific trade invoice.
+     *
+     * @summary Retrieves the line items for a trade invoice.
+     *
+     * @param {Number} id - The id of the invoice for which you want the line items of.
+     *
+     * @returns An array of line items, empty if no items were found.
+     * @throws Error If the id was not provided.
+     *
+     * @example
+     * let promise = Trades.lineItems(1);
+     * promise.then(lineItems => console.log(lineItems));
+     *
+     * @memberof module:db/api.Trades
+     */
+    lineItems: function(id) {
+        if (id === null || id === undefined || id < 1) {
+            throw new Error('Must specify an id (greater than 0)!');
+        }
+
+        return pool.query('SELECT * FROM tbl_trade_items WHERE trade_invoice_id = $1', [id])
+                   .then(res => res.rows);
     }
 }
 
