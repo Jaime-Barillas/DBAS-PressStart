@@ -46,6 +46,9 @@ const tradeTables = require("./population_scripts/trade_tables");
 const repairTables = require("./population_scripts/repair_tables");
 const reservationTables = require("./population_scripts/reservation_tables");
 
+// Views
+const itemsReportView = require('./views/items_report');
+
 /*======= Functions =======*/
 function setupDatabase() {
     let client = new Client({
@@ -134,6 +137,12 @@ switch(process.argv[2]) {
         console.log('Seeding databaes tables...');
         seedTables();
         console.log('Done!');
+        break;
+
+    case 'views':
+        console.log('Setting up views...');
+        itemsReportView.setupView()
+            .then(() => console.log('Done!'));
         break;
 
     default:
