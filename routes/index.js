@@ -12,7 +12,7 @@ router.get('/monthlyreport', function(req, res, next) {
     let reportPromise = db.Reports.itemsReportData();
     reportPromise.then(data => {
         let reportData = data.slice(0, 6);
-        res.render('index', {title: JSON.stringify(reportData)});
+        res.render('monthlyreport', {dat: reportData});
     });
 });
 
