@@ -108,14 +108,12 @@ exports.Sales = {
     /**
      * Creates a new Sale order with the specified info.
      *
-     * @param {Object} repairInvoice - Contains the required information for the new repair order.
-     * @param {String} repairInvoice.memberId - .
-     * @param {String} repairInvoice.employeeId - The new member's password.
-     * @param {String} repairInvoice.statusId - The new member's given name.
-     * @param {String} repairInvoice.repairInvoiceDescription - The new member's surname.
-     * @param {String} repairInvoice.repairInvoiceLabourHours - The new member's postal code.
-     * @param {String} repairInvoice.repairInvoiceLabourCost - The new member's phone number.
-     * @param {Object} repairLineItems - An array of objects with properties corresponding to tbl_repair_items columns
+     * @param {Object} saleInvoice - Contains the required information for the new sale order.
+     * @param {Number} saleInvoice.memberId - The member that made the sale, may be null.
+     * @param {Number} saleInvoice.employeeId - The employee that made the sale.
+     * @param {Number} saleInvoice.storeId - The store where the sale was made.
+     * @param {String} saleInvoice.saleInvoiceDate - The day and time the sale was made.
+     * @param {Object[]} saleLineItems - An array of objects with properties corresponding to tbl_sale_items columns
      * in camelCase, there is no need to provide the invoice id.
      *
      * @returns A Promise that contains true or false.
@@ -338,13 +336,13 @@ exports.Repairs = {
      * Creates a new Repair order with the specified info.
      *
      * @param {Object} repairInvoice - Contains the required information for the new repair order.
-     * @param {String} repairInvoice.memberId - .
-     * @param {String} repairInvoice.employeeId - The new member's password.
-     * @param {String} repairInvoice.statusId - The new member's given name.
-     * @param {String} repairInvoice.repairInvoiceDescription - The new member's surname.
-     * @param {String} repairInvoice.repairInvoiceLabourHours - The new member's postal code.
-     * @param {String} repairInvoice.repairInvoiceLabourCost - The new member's phone number.
-     * @param {Object} repairLineItems - An array of objects with properties corresponding to tbl_repair_items columns
+     * @param {Number} repairInvoice.memberId - The member that requested a repair.
+     * @param {Number} repairInvoice.employeeId - The employee handling the repair.
+     * @param {Number} repairInvoice.statusId - The status of the repair, should be 'open'.
+     * @param {String} repairInvoice.repairInvoiceDescription - Description of the repair.
+     * @param {Number} repairInvoice.repairInvoiceLabourHours - Amount of hours expected to take or 0 if updating later.
+     * @param {Number} repairInvoice.repairInvoiceLabourCost - Hourly cost.
+     * @param {Object[]} repairLineItems - An array of objects with properties corresponding to tbl_repair_items columns
      * in camelCase, there is no need to provide the invoice id.
      *
      * @returns A Promise that contains true or false.
