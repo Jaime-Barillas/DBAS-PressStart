@@ -38,5 +38,6 @@ exports.setupTables = function() {
         trade_item_payout_type varchar(10),
         trade_item_final_trade_value money
         );`)
+        .then(() => console.log("trade_items Table Created"))
         .then(() => client.end());
 }

@@ -32,8 +32,9 @@ exports.setupTables = function() {
     return client.query(`CREATE TABLE tbl_physical_conditions(
         physical_condition_id serial PRIMARY KEY,
         physical_condition_name varchar(20),
-        physical_condition_description varchar(50),
+        physical_condition_description varchar(64),
         physical_condition_value decimal (8,2)
         );`)
+        .then(() => console.log("physical_conditions Table Created"))
         .then(() => client.end());
 }

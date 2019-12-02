@@ -41,8 +41,10 @@ exports.setupTables = function() {
         employee_address varchar(120),
         employee_postal_code varchar(6),
         employee_availability text,
-        employee_wage money
+        employee_wage money,
+        employee_manager boolean
         );`)
+        .then(() => console.log("employees Table Created"))
         .then(() => client.end())
         ;
 }

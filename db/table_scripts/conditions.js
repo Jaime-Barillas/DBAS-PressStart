@@ -35,5 +35,6 @@ exports.setupTables = function() {
         box_condition_id integer,
         manual_condition_id integer
         );`)
+        .then(() => console.log("conditions Table Created"))
         .then(() => client.end());
 }

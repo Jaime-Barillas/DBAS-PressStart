@@ -1,7 +1,7 @@
 /*
 Author:     Shaun McCrum
 Created:    19 Nov 2019
-Since:      19 Nov 2019
+Since:      28 Nov 2019
 Description:  Create table data for database tables
 */
 
@@ -32,15 +32,15 @@ function randNth(array) {
 function genItem() {
     let item = [];
 
-    item.push(randInt(20));
-    item.push(randInt(10));
-    item.push(randInt(1000));
-    item.push(randNth(itemNames));
-    item.push(randPrice(100));
-    item.push(randPrice(100));
-    item.push(randPrice(100));
-    item.push(randInt(1000));
-    item.push('The best game in the world.');
+    item.push(randInt(20));                     // item type id
+    item.push(randInt(3));                      // store id
+    item.push(randInt(25));                     // condition id
+    item.push(randNth(itemNames));              // item name
+    item.push(randPrice(100));                  // store cost
+    item.push(randPrice(100));                  // sale price
+    item.push(randPrice(100));                  // mrsp
+    item.push(randInt(1000));                   // qty in stock
+    item.push('The best game in the world.');   //item description
 
     return item;
 }
@@ -73,7 +73,7 @@ function genBoxCondition() {
     }
     else if (randomizer == 1) {
         boxCondition.push('fatnastic');
-        boxCondition.push('Absolutely fantastic condition, no obvious visible marks');
+        boxCondition.push('Fantastic condition, no obvious visible marks');
         boxCondition.push(2.00); // value reduction
     }
     else if (randomizer == 2) {
@@ -101,13 +101,13 @@ function genManualCondition() {
     }
     else if (randomizer == 1) {
         manualCondition.push('fantastic');
-        manualCondition.push('Absolutely fantastic condition, no pen marks visible marks or ripped pages');
-        boxComanualConditionndition.push(2.00); // value reduction
+        manualCondition.push('Fantastic condition, no visible marks or ripped pages');
+        manualCondition.push(2.00); // value reduction
     }
     else if (randomizer == 2) {
         manualCondition.push('damaged');
-        boxCondition.push('Might contain pen marks or ripped pages');
-        boxCondition.push(3.00);  // value reduction
+        manualCondition.push('Might contain pen marks or ripped pages');
+        manualCondition.push(3.00);  // value reduction
     }
     else if (randomizer == 3) {
         manualCondition.push('none');
@@ -166,10 +166,6 @@ exports.seedItemTables = function() {
     // Establish connection
     let queries = client.connect();
     // generate table data
-    let insertItemSql = 'INSERT INTO tbl_items(item_type_id, store_id, '+
-        'condition_id, item_name, item_cost, item_sale_price, '+
-        'item_mrsp, item_stock_quantity, item_description) '+
-        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);';
 
     let insertItemTypeSql = 'INSERT INTO tbl_item_types(item_type_name, '+
         'item_type_description, item_type_value) '+
@@ -187,15 +183,14 @@ exports.seedItemTables = function() {
         'physical_condition_description, physical_condition_value) '+
         'VALUES($1, $2, $3);';
         
-    let insertConditionSql = 'INSERT INTO tbl_conditions(box_condition_name, '+
-        'box_condition_description, box_condition_value) '+
+    let insertConditionSql = 'INSERT INTO tbl_conditions(box_condition_id, '+
+        'manual_condition_id, physical_condition_id) '+
         'VALUES($1, $2, $3);';
 
-    // Generate data -> queue up the queries -> close the connection.
-    let items = Array.from({length: 50}, genItem);
-    for (const item of items) {
-        queries = queries.then(() => client.query(insertItemSql, item));
-    }
+    let insertItemSql = 'INSERT INTO tbl_items(item_type_id, store_id, '+
+        'condition_id, item_name, item_cost, item_sale_price, '+
+        'item_mrsp, item_stock_quantity, item_description) '+
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);';
 
     // Generate data -> queue up the queries -> close the connection.
     let itemTypes = Array.from({length: 1}, genItemType);
@@ -218,15 +213,22 @@ exports.seedItemTables = function() {
     // Generate data -> queue up the queries -> close the connection.
     let physicalConditions = Array.from({length: 4}, genPhysicalCondition);
     for (const physicalCondition of physicalConditions) {
-        queries = queries.then(() => client.query(insertMhysicalConditionSql, physicalCondition));
+        queries = queries.then(() => client.query(insertPhysicalConditionSql, physicalCondition));
     }
 
     // Generate data -> queue up the queries -> close the connection.
-    let conditions = Array.from({length: 15}, genCondition);
+    let conditions = Array.from({length: 25}, genCondition);
     for (const condition of conditions) {
         queries = queries.then(() => client.query(insertConditionSql, condition));
     }
 
+    // Generate data -> queue up the queries -> close the connection.
+    let items = Array.from({length: 50}, genItem);
+    for (const item of items) {
+        queries = queries.then(() => client.query(insertItemSql, item));
+    }
+
     console.log('Closing Connection for item table seed');
-    queries.then(() => client.end());
+    return queries.then(() => client.end());
+    
 }

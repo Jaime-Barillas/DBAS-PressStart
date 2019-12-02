@@ -1,7 +1,7 @@
 /*
 Author:     Shaun McCrum
 Created:    19 Nov 2019
-Since:      19 Nov 2019
+Since:      27 Nov 2019
 Description:  Create table data for database tables
 */
 
@@ -9,6 +9,21 @@ const fs = require('fs');
 const path = require('path');
 
 const { Client } = require('pg');
+
+// generate a random date to be used in the database
+function randomDate() {
+    let minDate = new Date(2013,1,1);
+    let maxDate = new Date(2018,12,31);  
+    // set a minimum date add a random number to it
+    // multiply that date by the difference between the min and max date values.  
+    // based on documentation from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
+    var timeStamp = new Date(minDate.getTime() + Math.random() 
+        * (maxDate.getTime() - minDate.getTime()));
+    var year = timeStamp.getFullYear();
+    var month = timeStamp.getMonth() + 1;  // month index value is 0-11 so we must compenstte
+    var day = timeStamp.getDate();
+    return year + '-' + month + '-' + day ;
+}
 
 function randInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
@@ -18,39 +33,25 @@ function randNth(array) {
     return array[randInt(array.length)];
 }
 
-function randPostalCode() {
-    // TODO: Make pretty.
-    // Canadian postal code rules:
-    //     Does not include D, F, I, O, Q, U.
-    //     W, Z, do not appear in the first letter.
-    let firstAlpha = 'ABCEGHJKLMNPRSTVXY';
-    let restAlpha = 'ABCEGHJKLMNPRSTVWXYZ';
-
-    return randNth(firstAlpha) +
-           randInt(10).toString() +
-           randNth(restAlpha) +
-           randInt(10).toString() +
-           randNth(restAlpha) +
-           randInt(10).toString();
+// generate a reservation "invoice"
+function genReservation() {
+    let reservation = [];
+    reservation.push(randInt(2));                   // store to use
+    reservation.push(randInt(50));                  // member reserving
+    reservation.push(randomDate());                 // date reserved
+    reservation.push(randNth(['true','false']));    // Received?
+    return reservation;
 }
 
-function randPhoneNumber() {
-    //     --3--3---4           --3--3---4
-    return (1000000000 + randInt(8999999999)).toString();
+// generate a single reserved item
+function genReservationItem() {
+    let reserveItem = [];
+    reserveItem.push(randInt(10));      // hook an reserveItem to a reservation
+    reserveItem.push(randInt(50));      // item to reserve
+    return reserveItem;
 }
 
-function genStore() {
-    let store = [];
-    store.push(randInt(9999) +' '+ randNth(streetnames) + ' '
-    +  randNth(['St','Blvd','Cres','Rd','Ct']) + '. ' + 
-    randNth(['Oshawa', 'Toronto','Scarborough']));
-    store.push(randPostalCode());
-    store.push('ON');
-    store.push(randPhoneNumber());
-    return store;
-}
-
-exports.seedStores = function() {
+exports.seedReservationTables = function() {
     let client = new Client({
         user: 'pressstartadmin',
         database: 'pressstartdb'
@@ -58,41 +59,26 @@ exports.seedStores = function() {
     console.log("Connecting as "+ client.user + ".");
     // Establish connection
     let queries = client.connect();
-    // generate table data
-    let insertStoreSql = 'INSERT INTO tbl_stores(store_address, store_postal_code, '+
-        'store_province, store_phone_number) '+
+    // generate table data tbl_reservations
+    let insertReservationSql = 'INSERT INTO tbl_reservations(store_id, '+
+        'member_id, reservation_date_reserved, reservation_received) '+
         'VALUES($1, $2, $3, $4);';
 
-    // Generate data -> queue up the queries -> close the connection.
-    let stores = Array.from({length: 3}, genStore);
-    for (const store of stores) {
-        queries = queries.then(() => client.query(insertStoreSql, store));
-    }
-
-    console.log('Closing Connection for table seed');
-    queries.then(() => client.end());
-}
-
-exports.seedBasicTables = function() {
-    let client = new Client({
-        user: 'pressstartadmin',
-        database: 'pressstartdb'
-    });
-    console.log("Connecting as "+ client.user + ".");
-    // Establish connection
-    let queries = client.connect();
-    // generate table data
-    let insertMemberSql = 'INSERT INTO tbl_members(member_password, member_preffered_store, '+
-        'member_first_name, member_last_name, member_postal_code, '+
-        'member_phone, member_email, member_mailing_list) '+
-        'VALUES($1, $2, $3, $4, $5, $6, $7, $8);';
+    let insertReservationItemSql = 'INSERT INTO tbl_reservation_items(reservation_id, '+
+        'item_id) '+
+        'VALUES($1, $2);';
 
     // Generate data -> queue up the queries -> close the connection.
-    let members = Array.from({length: 50}, genMember);
-    for (const member of members) {
-        queries = queries.then(() => client.query(insertMemberSql, member));
+    let reservations = Array.from({length: 10}, genReservation);
+    for (const reserve of reservations) {
+        queries = queries.then(() => client.query(insertReservationSql, reserve));
     }
 
-    console.log('Closing Connection for table seed');
-    queries.then(() => client.end());
+    let reserveItems = Array.from({length: 10}, genReservationItem);
+    for (const reserveItem of reserveItems) {
+        queries = queries.then(() => client.query(insertReservationItemSql, reserveItem));
+    }
+
+    console.log('Closing Connection for reservation table seed');
+    return queries.then(() => client.end());
 }

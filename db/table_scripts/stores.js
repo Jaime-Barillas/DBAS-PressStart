@@ -36,5 +36,6 @@ exports.setupTables = function() {
         store_province varchar(2),
         store_phone_number varchar(10)
         );`)
+        .then(() => console.log("stores Table Created"))
         .then(() => client.end());
 }

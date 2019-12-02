@@ -40,5 +40,6 @@ exports.setupTables = function() {
         member_email varchar(60),
         member_mailing_list boolean
         );`)
+        .then(() => console.log("members Table Created"))
         .then(() => client.end());
 }

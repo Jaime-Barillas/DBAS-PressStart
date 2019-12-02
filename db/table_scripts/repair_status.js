@@ -35,6 +35,7 @@ exports.setupTables = function() {
         repair_status_name varchar(20),
         repair_status_description varchar(50)
         );`)
+        .then(() => console.log("repair_status Table Created"))
         .then(() => client.end());
         //client.end();
 }

@@ -46,10 +46,8 @@ const tradeTables = require("./population_scripts/trade_tables");
 const repairTables = require("./population_scripts/repair_tables");
 const reservationTables = require("./population_scripts/reservation_tables");
 
-//Imported object data
-/* const firstNames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/population_scripts', 'firstnames-short.json'), 'utf8'));
-const lastNames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/population_scripts', 'lastnames-short.json'), 'utf8'));
-const streetnames = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/population_scripts', 'streetnames.json'), 'utf8')); */
+// Views
+const itemsReportView = require('./views/items_report');
 
 /*======= Functions =======*/
 function setupDatabase() {
@@ -107,7 +105,10 @@ function setupTables() {
     .then (() => repaiItemsFunction.dropTables())
     .then (() => repaiItemsFunction.setupTables())
     .then (() => reservationFunction.dropTables())
+    .then (() => reservationFunction.setupTables())
+    .then (() => reservationItemFunction.dropTables())
     .then (() => reservationItemFunction.setupTables()) 
+    .catch(console.log.bind(console))
     ;
 }
 
@@ -115,11 +116,12 @@ function setupTables() {
 function seedTables() {
     console.log('Seeding Tables.')
     return basicTables.seedBasicTables()
-    //.then (() => itemTables.seedItemTables())
-    //.then (() => saleTables.seedSaleTables())
-    //.then (() => repairTables.seedRepairTables())
-    //.then (() => tradeTables.seedTradeTables())
-    //.then (() => itemTables.seedReservationTables())
+    .then (() => itemTables.seedItemTables())
+    .then (() => saleTables.seedSalesTables())
+    .then (() => repairTables.seedRepairTables())
+    .then (() => tradeTables.seedTradeTables())
+    .then (() => reservationTables.seedReservationTables())
+    .catch(console.log.bind(console))
     ;
 }
 
@@ -137,13 +139,20 @@ switch(process.argv[2]) {
         console.log('Done!');
         break;
 
+    case 'views':
+        console.log('Setting up views...');
+        itemsReportView.setupView()
+            .then(() => console.log('Done!'));
+        break;
+
     default:
         console.log('Performing full setup of the Press Start database...');
         setupDatabase()
             .then(() => setupTables())
+            .then(() => console.log('Table Setup... Done!'))
             .then(() => seedTables())
+            .then(() => console.log('Table Seeding... Done!'))
             ;
-        console.log('Done!');
         break;
 }
 

@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const { Pool } = require('pg');
 
 var pool;
@@ -27,6 +30,56 @@ var pool;
  * @module db/api
  */
 
+function createRepair(memberId, employeeId, statusId, repairInvoiceDescription, repairInvoiceLabourHours, repairInvoiceLabourCost) {
+    const createInvoiceSql = `INSERT INTO tbl_repair_invoices(
+                                  customer_id,
+                                  employee_id,
+                                  repair_status_id,
+                                  repair_invoice_description,
+                                  repair_invoice_labour_hours,
+                                  repair_invoice_labour_hours_cost
+                              ) VALUES($1, $2, $3, $4, $5, $6)
+                                  RETURNING repair_invoice_id;`;
+
+    return pool.query(createInvoiceSql, [memberId, employeeId, statusId, repairInvoiceDescription, repairInvoiceLabourHours, repairInvoiceLabourCost])
+               .then(res => res.rows[0].repair_invoice_id);
+}
+function createRepairLineItem(repairInvoiceId, repairItemPartName, repairItemPartDescription, repairItemCost) {
+    const createLineItemSql = `INSERT INTO tbl_repair_items(
+                                   repair_invoice_id,
+                                   repair_part_name,
+                                   repair_item_part_description,
+                                   repair_item_cost
+                               ) VALUES($1, $2, $3, $4);`;
+
+    return pool.query(createLineItemSql, [repairInvoiceId, repairItemPartName, repairItemPartDescription, repairItemCost])
+               .then(res => res.rows);
+}
+
+function createSale(memberId, employeeId, storeId, saleInvoiceDate) {
+    const createInvoiceSql = `INSERT INTO tbl_sale_invoices(
+                                  member_id,
+                                  employee_id,
+                                  store_id,
+                                  sale_invoice_date
+                              ) VALUES($1, $2, $3, $4)
+                                  RETURNING invoice_id;`;
+
+    return pool.query(createInvoiceSql, [memberId, employeeId, storeId, saleInvoiceDate])
+               .then(res => res.rows[0].invoice_id);
+}
+function createSaleLineItem(invoiceId, itemId, saleItemQuantity, saleItemPrice) {
+    const createLineItemSql = `INSERT INTO tbl_sale_items(
+                                   invoice_id,
+                                   item_id,
+                                   sale_item_quantity,
+                                   sale_item_price
+                               ) VALUES($1, $2, $3, $4);`;
+
+    return pool.query(createLineItemSql, [invoiceId, itemId, saleItemQuantity, saleItemPrice])
+               .then(res => res.rows);
+}
+
 /**
  * Initializes the connection pool to the database. Make sure you run this
  * once before interacting with the database!
@@ -44,6 +97,50 @@ exports.initialize = function() {
  */
 exports.terminate = function() {
     pool.end();
+}
+
+/**
+ * A collection of functions for interacting with the Press Start sales.
+ *
+ * @namespace
+ */
+exports.Sales = {
+    /**
+     * Creates a new Sale order with the specified info.
+     *
+     * @param {Object} saleInvoice - Contains the required information for the new sale order.
+     * @param {Number} saleInvoice.memberId - The member that made the sale, may be null.
+     * @param {Number} saleInvoice.employeeId - The employee that made the sale.
+     * @param {Number} saleInvoice.storeId - The store where the sale was made.
+     * @param {String} saleInvoice.saleInvoiceDate - The day and time the sale was made.
+     * @param {Object[]} saleLineItems - An array of objects with properties corresponding to tbl_sale_items columns
+     * in camelCase, there is no need to provide the invoice id.
+     *
+     * @returns A Promise that contains true or false.
+     *
+     * @memberof module:db/api.Sales
+     */
+    create: function(saleInvoice, saleLineItems) {
+        // TODO: Transactions.
+        let invoiceId;
+        let queries;
+
+        // Invoice
+        queries = createSale(saleInvoice.memberId,
+                             saleInvoice.employeeId,
+                             saleInvoice.storeId,
+                             saleInvoice.saleInvoiceDate)
+                  .then(res => {invoiceId = res; return res;});
+
+        // Line Items
+        for (item of saleLineItems) {
+            let {itemID, saleItemQuantity, saleItemPrice} = item;
+
+            queries = queries.then(() => createSaleLineItem(invoiceId, itemID, saleItemQuantity, saleItemPrice));
+        }
+
+        return queries.then(_ => true).catch(_ => false);
+    },
 }
 
 /**
@@ -203,6 +300,513 @@ exports.Inventory = {
 }
 
 /**
+ * A collection of functions for interacting with the Press Start inventory.
+ * Contains functions to retrieve inventory, search for specific inventory,
+ * and update inventory.
+ *
+ * @namespace
+ */
+exports.Repairs = {
+
+    /**
+     * This function returns the id and description of all repairs.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     repair_invoice_id: blah,
+     *     repair_invoice_description: blah
+     * }
+     * </code></pre>
+     *
+     * @returns An array of all Press Start repairs.
+     *
+     * @example
+     * let promise = db.Repairs.all();
+     * promise.then(allRepairs => console.log(allRepairs));
+     *
+     * @memberof module:db/api.Repairs
+     */
+    all: function() {
+        return pool.query('SELECT repair_invoice_id, repair_invoice_description FROM tbl_repair_invoices;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * Creates a new Repair order with the specified info.
+     *
+     * @param {Object} repairInvoice - Contains the required information for the new repair order.
+     * @param {Number} repairInvoice.memberId - The member that requested a repair.
+     * @param {Number} repairInvoice.employeeId - The employee handling the repair.
+     * @param {Number} repairInvoice.statusId - The status of the repair, should be 'open'.
+     * @param {String} repairInvoice.repairInvoiceDescription - Description of the repair.
+     * @param {Number} repairInvoice.repairInvoiceLabourHours - Amount of hours expected to take or 0 if updating later.
+     * @param {Number} repairInvoice.repairInvoiceLabourCost - Hourly cost.
+     * @param {Object[]} repairLineItems - An array of objects with properties corresponding to tbl_repair_items columns
+     * in camelCase, there is no need to provide the invoice id.
+     *
+     * @returns A Promise that contains true or false.
+     *
+     * @memberof module:db/api.Repairs
+     */
+    create: function(repairInvoice, repairLineItems) {
+        // TODO: Transactions.
+        let invoiceId;
+        let queries;
+
+        // Invoice
+        queries = createRepair(repairInvoice.memberId,
+                               repairInvoice.employeeId,
+                               repairInvoice.statusId,
+                               repairInvoice.repairInvoiceDescription,
+                               repairInvoice.repairInvoiceLabourHours,
+                               repairInvoice.repairInvoiceLabourCost)
+                  .then(res => {invoiceId = res; return res;});
+
+        // Line Items
+        for (item of repairLineItems) {
+            let {repairItemPartName, repairItemPartDescription, repairItemCost} = item;
+
+            queries = queries.then(() => createRepairLineItem(invoiceId, repairItemPartName, repairItemPartDescription, repairItemCost));
+        }
+
+        return queries.then(_ => true).catch(_ => false);
+    },
+
+    /**
+     * This functions searches repairs for any records that match the
+     * provided contstraints. Constraints are defined as a JS object with
+     * properties for the repair invoice <code>id</code>, <code>memberFirstName</code>,
+     * or <code>memberLastName</code>. It is an error to
+     * provide an empty object or an object without at least one of the
+     * mentioned properties.
+     * <br/><br/>
+     * The <code>memberFirstName</code> and <code>memberLastName</code>
+     * properties are case-insensitive patterns that need to only match part
+     * of their respective attributes. See examples for more info.
+     * <br/><br/>
+     * Only one of the properties is required, but if multiple are present,
+     * then they will act as filters resulting in more specific results. Of
+     * course, if the <code>id</code> property is present, then it will
+     * supersede the other properties and return the item it directly
+     * corresponds to.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     repair_id: blah,
+     *     repair_description: blah,
+     *     repair_member_name: blah,
+     *     repair_employee_name: blah,
+     *     repair_status: blah
+     * }
+     * </code></pre>
+     *
+     * @summary Searches for repair order from the Press Start database.
+     *
+     * @param {Object} repairDetails - An object containing the repair invoice
+     *     id, memberFirstName or memberLastName of the desired repair order
+     *     (or any combination of the three!)
+     * @param {Number} repairDetails.id - The id of the desired repair invoice.
+     * @param {String} repairDetails.memberFirstName - The first name of the repair's member.
+     * @param {String} repairDetails.memberLastName - The last name of the repair's member.
+     *
+     * @returns An array of matching items, empty if no items were found.
+     * @throws Error If none of the mentioned properties were present in the
+     *     passed in object.
+     *
+     * @example
+     * // Return the repair order with id 5.
+     * let promise = Repairs.search({id: 5});
+     * @example
+     * // Return all repairs with an associated member with a first name that starts with 'al'.
+     * let promise = Repairs.search({firstName: 'al'}); // e.g. member with first name: alphonse
+     * @example
+     * // Return all repairs with an associated member whose first name starts with 'al' and last name
+     * // starts with 'do'.
+     * let promise = Repairs.search({firstName: 'al', lastName: 'do'}); // e.g. member: alphonse, dosomething
+     *
+     * @memberof module:db/api.Repairs
+     */
+    search: function({id, memberFirstName, memberLastName}) {
+        // TODO: Parameter validation.
+        const searchByIdSql = fs.readFileSync(path.resolve(__dirname, 'queries/repairs_search_by_id.sql'), 'utf8');
+
+        let result;
+
+        if (id) {
+            result = pool.query(searchByIdSql, [id]);
+        } else {
+            // Each constraint will be appended to this sql.
+            let searchSql = fs.readFileSync(path.resolve(__dirname, 'queries/repairs_search_by_name.sql'), 'utf8');
+            // Filter out any null or undefined values.
+            // These entries provide an ordered mapping from column name to
+            // the search pattern.
+            let entries = [
+                ['tbl_members.member_first_name', memberFirstName],
+                ['tbl_members.member_last_name', memberLastName]
+            ].filter(([_, value]) => !!value);
+
+            // We must have at least one of memberFirstName, or memberLastName.
+            if (entries.length === 0) {
+                throw new Error('Must specify at least one of: id, memberFirstName, or memberLastName');
+            }
+
+            // The meat of the function:
+
+            // The first entry will be added to the where clause
+            // but all subsequent entries must have an AND prepended.
+            let [first, ...rest] = entries;
+
+            searchSql += `${first[0]} ILIKE $1 || '%'`;
+            for (var i = 0; i < rest.length; i++) {
+                searchSql += ` AND ${rest[i][0]} ILIKE $${i + 2} || '%'`;
+            }
+            searchSql += ';';
+
+            result = pool.query(searchSql, entries.map(entry => entry[1]));
+        }
+
+        return result.then(res => res.rows);
+    },
+
+    /**
+     * This functions retrieves the contents of the tbl_repair_items table for
+     * a specific repair invoice.
+     *
+     * @summary Retrieves the line items for a repair invoice.
+     *
+     * @param {Number} id - The id of the invoice for which you want the line items of.
+     *
+     * @returns An array of line items, empty if no items were found.
+     * @throws Error If none of the id was not provided.
+     *
+     * @example
+     * let promise = Repairs.lineItems(1);
+     * promise.then(lineItems => console.log(lineItems));
+     *
+     * @memberof module:db/api.Repairs
+     */
+    lineItems(id) {
+        if (id === null || id === undefined || id < 1) {
+            throw new Error('Must specify an id (greater than 0)!');
+        }
+
+        return pool.query('SELECT * FROM tbl_repair_items WHERE repair_invoice_id = $1', [id])
+                   .then(res => res.rows);
+    }
+}
+
+/**
+ * A collection of functions for interacting with Press Start trade ins.
+ *
+ * @namespace
+ */
+exports.Trades = {
+
+    /**
+     * This function returns the id and date of all trades.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     trade_invoice_id: blah,
+     *     trade_invoice_date: blah
+     * }
+     * </code></pre>
+     *
+     * @returns An array of all Press Start trade ins.
+     *
+     * @example
+     * let promise = db.Trades.all();
+     * promise.then(allTrades => console.log(allTrades));
+     *
+     * @memberof module:db/api.Trades
+     */
+    all: function() {
+        return pool.query('SELECT trade_invoice_id, trade_invoice_date FROM tbl_trade_invoices;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This functions searches trade ins for any records that match the
+     * provided contstraints. Constraints are defined as a JS object with
+     * properties for the trade invoice <code>id</code>, <code>memberFirstName</code>,
+     * or <code>memberLastName</code>. It is an error to
+     * provide an empty object or an object without at least one of the
+     * mentioned properties.
+     * <br/><br/>
+     * The <code>memberFirstName</code> and <code>memberLastName</code>
+     * properties are case-insensitive patterns that need to only match part
+     * of their respective attributes. See examples for more info.
+     * <br/><br/>
+     * Only one of the properties is required, but if multiple are present,
+     * then they will act as filters resulting in more specific results. Of
+     * course, if the <code>id</code> property is present, then it will
+     * supersede the other properties and return the item it directly
+     * corresponds to.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     trade_id: blah,
+     *     trade_date: blah,
+     *     trade_member_name: blah
+     * }
+     * </code></pre>
+     *
+     * @summary Searches for trade-ins from the Press Start database.
+     *
+     * @param {Object} tradeDetails - An object containing the trade invoice
+     *     id, memberFirstName or memberLastName of the desired trade order
+     *     (or any combination of the three!)
+     * @param {Number} tradeDetails.id - The id of the desired trade invoice.
+     * @param {String} tradeDetails.memberFirstName - The first name of the trade's member.
+     * @param {String} tradeDetails.memberLastName - The last name of the trade's member.
+     *
+     * @returns An array of matching items, empty if no items were found.
+     * @throws Error If none of the mentioned properties were present in the
+     *     passed in object.
+     *
+     * @example
+     * // Return the Trade with id 5.
+     * let promise = Trades.search({id: 5});
+     * @example
+     * // Return all Trades with an associated member with a first name that starts with 'al'.
+     * let promise = Trades.search({firstName: 'al'}); // e.g. member with first name: alphonse
+     * @example
+     * // Return all Trades with an associated member whose first name starts with 'al' and last name
+     * // starts with 'do'.
+     * let promise = Trades.search({firstName: 'al', lastName: 'do'}); // e.g. member: alphonse, dosomething
+     *
+     * @memberof module:db/api.Trades
+     */
+    search: function({id, memberFirstName, memberLastName}) {
+        // TODO: Parameter validation.
+        const searchByIdSql = fs.readFileSync(path.resolve(__dirname, 'queries/trades_search_by_id.sql'), 'utf8');
+
+        let result;
+
+        if (id) {
+            result = pool.query(searchByIdSql, [id]);
+        } else {
+            // Each constraint will be appended to this sql.
+            let searchSql = fs.readFileSync(path.resolve(__dirname, 'queries/trades_search_by_name.sql'), 'utf8');
+            // Filter out any null or undefined values.
+            // These entries provide an ordered mapping from column name to
+            // the search pattern.
+            let entries = [
+                ['tbl_members.member_first_name', memberFirstName],
+                ['tbl_members.member_last_name', memberLastName]
+            ].filter(([_, value]) => !!value);
+
+            // We must have at least one of memberFirstName, or memberLastName.
+            if (entries.length === 0) {
+                throw new Error('Must specify at least one of: id, memberFirstName, or memberLastName');
+            }
+
+            // The meat of the function:
+
+            // The first entry will be added to the where clause
+            // but all subsequent entries must have an AND prepended.
+            let [first, ...rest] = entries;
+
+            searchSql += `${first[0]} ILIKE $1 || '%'`;
+            for (var i = 0; i < rest.length; i++) {
+                searchSql += ` AND ${rest[i][0]} ILIKE $${i + 2} || '%'`;
+            }
+            searchSql += ';';
+
+            result = pool.query(searchSql, entries.map(entry => entry[1]));
+        }
+
+        return result.then(res => res.rows);
+    },
+
+    /**
+     * This functions retrieves the contents of the tbl_trade_items table for
+     * a specific trade invoice.
+     *
+     * @summary Retrieves the line items for a trade invoice.
+     *
+     * @param {Number} id - The id of the invoice for which you want the line items of.
+     *
+     * @returns An array of line items, empty if no items were found.
+     * @throws Error If the id was not provided.
+     *
+     * @example
+     * let promise = Trades.lineItems(1);
+     * promise.then(lineItems => console.log(lineItems));
+     *
+     * @memberof module:db/api.Trades
+     */
+    lineItems: function(id) {
+        if (id === null || id === undefined || id < 1) {
+            throw new Error('Must specify an id (greater than 0)!');
+        }
+
+        return pool.query('SELECT * FROM tbl_trade_items WHERE trade_invoice_id = $1', [id])
+                   .then(res => res.rows);
+    }
+}
+
+/**
+ * A collection of functions for interacting with Press Start reservations.
+ *
+ * @namespace
+ */
+exports.Reservations = {
+
+    /**
+     * This function returns the id, store id, and date reserved of all reservations.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     reservation_id: blah,
+     *     store_id: blah,
+     *     reservation_date_reserved: blah
+     * }
+     * </code></pre>
+     *
+     * @returns An array of all Press Start reservations.
+     *
+     * @example
+     * let promise = db.Reservations.all();
+     * promise.then(allReservations => console.log(allReservations));
+     *
+     * @memberof module:db/api.Reservations
+     */
+    all: function() {
+        return pool.query('SELECT reservation_id, store_id, reservation_date_reserved FROM tbl_reservations;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This functions searches trade ins for any records that match the
+     * provided contstraints. Constraints are defined as a JS object with
+     * properties for the trade invoice <code>id</code>, <code>memberFirstName</code>,
+     * or <code>memberLastName</code>. It is an error to
+     * provide an empty object or an object without at least one of the
+     * mentioned properties.
+     * <br/><br/>
+     * The <code>memberFirstName</code> and <code>memberLastName</code>
+     * properties are case-insensitive patterns that need to only match part
+     * of their respective attributes. See examples for more info.
+     * <br/><br/>
+     * Only one of the properties is required, but if multiple are present,
+     * then they will act as filters resulting in more specific results. Of
+     * course, if the <code>id</code> property is present, then it will
+     * supersede the other properties and return the item it directly
+     * corresponds to.
+     * The returned data is an array with objects of the format:
+     * <br/><br/>
+     * <pre><code> // Format:
+     * {
+     *     reservation_id: blah,
+     *     reservation_member_name: blah,
+     *     reservation_date_reserved: blah,
+     *     reservation_received: blah,
+     *     store_id: blah
+     * }
+     * </code></pre>
+     *
+     * @summary Searches for reservations from the Press Start database.
+     *
+     * @param {Object} reservationDetails - An object containing the reservation
+     *     id, memberFirstName or memberLastName
+     *     (or any combination of the three!)
+     * @param {Number} reservationDetails.id - The id of the desired reservation.
+     * @param {String} reservationDetails.memberFirstName - The first name of the reservation's member.
+     * @param {String} reservationDetails.memberLastName - The last name of the reservation's member.
+     *
+     * @returns An array of matching items, empty if no items were found.
+     * @throws Error If none of the mentioned properties were present in the
+     *     passed in object.
+     *
+     * @example
+     * // Return the Reservation with id 5.
+     * let promise = Reservations.search({id: 5});
+     * @example
+     * // Return all Reservations with an associated member with a first name that starts with 'al'.
+     * let promise = Reservations.search({firstName: 'al'}); // e.g. member with first name: alphonse
+     * @example
+     * // Return all Reservations with an associated member whose first name starts with 'al' and last name
+     * // starts with 'do'.
+     * let promise = Reservations.search({firstName: 'al', lastName: 'do'}); // e.g. member: alphonse, dosomething
+     *
+     * @memberof module:db/api.Reservations
+     */
+    search: function({id, memberFirstName, memberLastName}) {
+        // TODO: Parameter validation.
+        const searchByIdSql = fs.readFileSync(path.resolve(__dirname, 'queries/reservations_search_by_id.sql'), 'utf8');
+
+        let result;
+
+        if (id) {
+            result = pool.query(searchByIdSql, [id]);
+        } else {
+            // Each constraint will be appended to this sql.
+            let searchSql = fs.readFileSync(path.resolve(__dirname, 'queries/reservations_search_by_name.sql'), 'utf8');
+            // Filter out any null or undefined values.
+            // These entries provide an ordered mapping from column name to
+            // the search pattern.
+            let entries = [
+                ['tbl_members.member_first_name', memberFirstName],
+                ['tbl_members.member_last_name', memberLastName]
+            ].filter(([_, value]) => !!value);
+
+            // We must have at least one of memberFirstName, or memberLastName.
+            if (entries.length === 0) {
+                throw new Error('Must specify at least one of: id, memberFirstName, or memberLastName');
+            }
+
+            // The meat of the function:
+
+            // The first entry will be added to the where clause
+            // but all subsequent entries must have an AND prepended.
+            let [first, ...rest] = entries;
+
+            searchSql += `${first[0]} ILIKE $1 || '%'`;
+            for (var i = 0; i < rest.length; i++) {
+                searchSql += ` AND ${rest[i][0]} ILIKE $${i + 2} || '%'`;
+            }
+            searchSql += ';';
+
+            result = pool.query(searchSql, entries.map(entry => entry[1]));
+        }
+
+        return result.then(res => res.rows);
+    },
+
+    /**
+     * This functions retrieves the contents of the tbl_reservation_items table for
+     * a specific reservation.
+     *
+     * @summary Retrieves the line items for a reservation.
+     *
+     * @param {Number} id - The id of the reservation for which you want the line items of.
+     *
+     * @returns An array of line items, empty if no items were found.
+     * @throws Error If the id was not provided.
+     *
+     * @example
+     * let promise = Reservations.lineItems(1);
+     * promise.then(lineItems => console.log(lineItems));
+     *
+     * @memberof module:db/api.Reservations
+     */
+    lineItems: function(id) {
+        if (id === null || id === undefined || id < 1) {
+            throw new Error('Must specify an id (greater than 0)!');
+        }
+
+        return pool.query('SELECT * FROM tbl_reservation_items WHERE reservation_id = $1', [id])
+                   .then(res => res.rows);
+    }
+}
+
+/**
  * A collection of functions for interacting with Press Start member accounts.
  * Contains functions to create and search members.
  *
@@ -247,6 +851,23 @@ exports.Members = {
                                       prefferedStore])
                    .then(res => res.rows[0])
                    .catch(_ => null);
+    },
+
+    /**
+     * This function returns all members from the Press Start database.
+     *
+     * @returns An array of all Press Start members.
+     *
+     * @example
+     * // Log all members to the console. It might take a while...
+     * let promise = db.Members.all();
+     * promise.then(allMems => console.log(allMems));
+     *
+     * @memberof module:db/api.Members
+     */
+    all: function() {
+        return pool.query('SELECT * from tbl_members;')
+                   .then(res => res.rows);
     },
 
     /**
@@ -391,6 +1012,23 @@ exports.Employees = {
     },
 
     /**
+     * This function returns all employees from the Press Start database.
+     *
+     * @returns An array of all Press Start employees.
+     *
+     * @example
+     * // Log all employees to the console. It might take a while...
+     * let promise = db.Employees.all();
+     * promise.then(allEmps => console.log(allEmps));
+     *
+     * @memberof module:db/api.Employees
+     */
+    all: function() {
+        return pool.query('SELECT * from tbl_employees;')
+                   .then(res => res.rows);
+    },
+
+    /**
      * This functions searches employees for any records that match the
      * provided contstraints. Constraints are defined as a JS object with
      * properties for the employee <code>id</code>, <code>email</code>,
@@ -477,5 +1115,76 @@ exports.Employees = {
         }
 
         return result.then(res => res.rows);
+    }
+}
+
+/**
+ * A collection of functions for retrieving data to generate reports.
+ *
+ * @namespace
+ */
+exports.Reports = {
+    /**
+     * This functions retrieves report data for <em>each</em> item sale.
+     * In other words, each sale to a customer has its own entry in the
+     * returned data. The returned data is an array with objects of the format:
+     * <br/>
+     * <code>
+     * {
+     *     item_report_name: blah,
+     *     item_report_quantity: blah,
+     *     item_report_price: blah,
+     *     store_id: blah,
+     *     item_report_date: blah
+     * }
+     * </code>
+     *
+     * @summary Retrieves sale data about items. You probably
+     * <strong>don't</strong> want to use this function directly.
+     *
+     * @returns An array of JavaScript objects containing the item name, sale
+     * quantity, sale price, store id, and sale date.
+     *
+     * @example
+     * let promise = Reports.itemsReportData();
+     * promise.then(items => console.log(items));
+     *
+     * @memberof module:db/api.Reports
+     */
+    itemsReportData: function() {
+        const getAllSql = 'SELECT * FROM items_report;';
+
+        return pool.query(getAllSql)
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This functions retrieves report data the last month of sales. The
+     * returned data is an array that contains objects of the format:
+     * <br/>
+     * <code>
+     * {
+     *     item_name: blah,
+     *     total_sold: blah,
+     *     total_revenue: blah
+     * }
+     * </code>
+     *
+     * @summary Retrieves sale data about items for the last month.
+     *
+     * @returns An array of JavaScript objects containing the item name,
+     * total sold, and total revenue.
+     *
+     * @example
+     * let promise = Reports.monthlyReport();
+     * promise.then(items => console.log(items));
+     *
+     * @memberof module:db/api.Reports
+     */
+    monthlyReport() {
+        let monthlyReportSql = fs.readFileSync(path.resolve(__dirname, 'views/monthly_sales_report.sql'), 'utf8');
+
+        return pool.query(monthlyReportSql)
+                   .then(res => res.rows);
     }
 }

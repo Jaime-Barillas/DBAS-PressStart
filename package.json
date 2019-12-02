@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node_modules/nodemon/bin/nodemon.js bin/www",
+    "start": "node node_modules/nodemon/bin/nodemon.js bin/www",
     "db-setup": "node ./db/setup.js",
     "gen-docs": "node ./node_modules/jsdoc/jsdoc.js -c ./jsdoc.json",
     "test": "mocha"

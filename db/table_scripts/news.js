@@ -36,5 +36,6 @@ exports.setupTables = function() {
         news_article text,
         news_front_page boolean
         );`)
+        .then(() => console.log("news Table Created"))
         .then(() => client.end());
 }

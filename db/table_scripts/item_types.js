@@ -35,5 +35,6 @@ exports.setupTables = function() {
         item_type_description varchar(50),
         item_type_value decimal(8,2)
         );`)
+        .then(() => console.log("item_types Table Created"))
         .then(() => client.end());
 }

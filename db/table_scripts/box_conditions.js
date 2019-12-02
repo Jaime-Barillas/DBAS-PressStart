@@ -32,8 +32,9 @@ exports.setupTables = function() {
     return client.query(`CREATE TABLE tbl_box_conditions(
         box_condition_id serial PRIMARY KEY,
         box_condition_name varchar(20),
-        box_condition_description varchar(50),
+        box_condition_description varchar(64),
         box_condition_value decimal (8,2)
         );`)
+        .then(() => console.log("box_conditions Table Created"))
         .then(() => client.end());
 }

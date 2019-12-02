@@ -105,12 +105,18 @@ function randomAvailability() {
 }
 
 function randomDate() {
-    let minDate = new Date(2015,1,1);
-    let maxDate = new Date(2019,12,31);
-    let dateGap = (maxDate - minDate);
-    let timestamp = Math.round(Math.random() * dateGap);
-    timestamp += minDate;
-    return new Date(timestamp);
+    let minDate = new Date(2013,1,1);
+    let maxDate = new Date(2018,12,31);  
+    // Set a minimum date add a random number to it
+    // multiply that date by the difference between the min and max date values.  
+    // based on documentation from 
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
+    var timeStamp = new Date(minDate.getTime() + Math.random() 
+        * (maxDate.getTime() - minDate.getTime()));
+    var year = timeStamp.getFullYear();
+    var month = timeStamp.getMonth() + 1;  // month index value is 0-11 so we must compenstte
+    var day = timeStamp.getDate();
+    return year + '-' + month + '-' + day ;
 }
 
 // Functions to generate Seed Data
@@ -154,6 +160,7 @@ function genEmployee() {
     employee.push(randPostalCode());
     employee.push(randomAvailability());
     employee.push(randomWage());
+    employee.push(randNth(['true', 'false']));
     return employee;
 }
 
@@ -161,8 +168,7 @@ function genNews() {
     let newsItem = [];
     newsItem.push(randNth(['Discounted Items', 'Sale']));
     let generatedDate = randomDate();
-    //newsItem.push(generatedDate.getFullYear()+'-'+generatedDate.getMonth()+'-'+generatedDate.getDate());
-    newsItem.push('2019-02-15');  //hard coded, will be changing
+    newsItem.push(generatedDate);  //2019-12-31 date format
     newsItem.push(randNth(['Low on Stock!', '30% Off', 
         'Buy One Get one of equal value', 'Save the Tax.']));
     newsItem.push(randNth(['true', 'false']));
@@ -175,7 +181,7 @@ exports.seedBasicTables = function() {
         user: 'pressstartadmin',
         database: 'pressstartdb'
     });
-    console.log("Connecting as "+ client.user + ".");
+    console.log("Connected for seed as "+ client.user + ".");
     // Establish connection
     let queries = client.connect();
     // generate table data
@@ -187,10 +193,11 @@ exports.seedBasicTables = function() {
         'member_phone, member_email, member_mailing_list) '+
         'VALUES($1, $2, $3, $4, $5, $6, $7, $8);';
     let insertEmployeeSQL = 'INSERT INTO tbl_employees(employee_password, employee_first_name, employee_last_name, '+
-        'employee_job_title, employee_phone, employee_email, employee_address, employee_postal_code, employee_availability, employee_wage) '+
-        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);';
+        'employee_job_title, employee_phone, employee_email, employee_address, employee_postal_code, '+
+        'employee_availability, employee_wage, employee_manager) '+
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);';
     let insertNewsSQL = 'INSERT INTO tbl_news(news_title, news_date_added, news_article, news_front_page)'+
-    'VALUES($1, $2, $3, $4);';
+        'VALUES($1, $2, $3, $4);';
 
     // Generate data -> queue up the queries -> close the connection.
     let stores = Array.from({length: 3}, genStore);
@@ -212,8 +219,8 @@ exports.seedBasicTables = function() {
     for (const newsItem of news) {
         queries = queries.then(() => client.query(insertNewsSQL, newsItem));
     }
-
-
+    
     console.log('Closing Connection for basic table seed');
-    queries.then(() => client.end());
+    return queries.then(() => client.end());
+
 }
