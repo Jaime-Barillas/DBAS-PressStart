@@ -30,6 +30,32 @@ var pool;
  * @module db/api
  */
 
+function createRepair(memberId, employeeId, statusId, repairInvoiceDescription, repairInvoiceLabourHours, repairInvoiceLabourCost) {
+    const createInvoiceSql = `INSERT INTO tbl_repair_invoices(
+                                  customer_id,
+                                  employee_id,
+                                  repair_status_id,
+                                  repair_invoice_description,
+                                  repair_invoice_labour_hours,
+                                  repair_invoice_labour_hours_cost
+                              ) VALUES($1, $2, $3, $4, $5, $6)
+                                  RETURNING repair_invoice_id;`;
+
+    return pool.query(createInvoiceSql, [memberId, employeeId, statusId, repairInvoiceDescription, repairInvoiceLabourHours, repairInvoiceLabourCost])
+               .then(res => res.rows[0].repair_invoice_id);
+}
+function createRepairLineItem(repairInvoiceId, repairItemPartName, repairItemPartDescription, repairItemCost) {
+    const createLineItemSql = `INSERT INTO tbl_repair_items(
+                                   repair_invoice_id,
+                                   repair_part_name,
+                                   repair_item_part_description,
+                                   repair_item_cost
+                               ) VALUES($1, $2, $3, $4);`;
+
+    return pool.query(createLineItemSql, [repairInvoiceId, repairItemPartName, repairItemPartDescription, repairItemCost])
+               .then(res => res.rows);
+}
+
 /**
  * Initializes the connection pool to the database. Make sure you run this
  * once before interacting with the database!
@@ -236,6 +262,49 @@ exports.Repairs = {
     all: function() {
         return pool.query('SELECT repair_invoice_id, repair_invoice_description FROM tbl_repair_invoices;')
                    .then(res => res.rows);
+    },
+
+    /**
+     * Creates a new Repair order with the specified info.
+     *
+     * @param {Object} memberData - Contains the required information for the new member.
+     * @param {String} memberData.email - The new member's email address.
+     * @param {String} memberData.password - The new member's password.
+     * @param {String} memberData.firstName - The new member's given name.
+     * @param {String} memberData.lastName - The new member's surname.
+     * @param {String} memberData.postalCode - The new member's postal code.
+     * @param {String} memberData.phone - The new member's phone number.
+     * @param {Boolean} memberData.mailingList - Whether the new member wishes to receive news letters.
+     * @param {integer} memberData.prefferedStore - Id for the new member's preffered store.
+     *
+     * @returns A Promise that contains a JS object representing the newly
+     * created member. If creation of the new member failed, <code>null</code>
+     * is returned.
+     *
+     * @memberof module:db/api.Repairs
+     */
+    create: function(repairInvoice, repairLineItems) {
+        // TODO: Transactions.
+        let invoiceId;
+        let queries;
+
+        // Invoice
+        queries = createRepair(repairInvoice.memberId,
+                               repairInvoice.employeeId,
+                               repairInvoice.statusId,
+                               repairInvoice.repairInvoiceDescription,
+                               repairInvoice.repairInvoiceLabourHours,
+                               repairInvoice.repairInvoiceLabourCost)
+                  .then(res => {invoiceId = res; return res;});
+
+        // Line Items
+        for (item of repairLineItems) {
+            let {repairItemPartName, repairItemPartDescription, repairItemCost} = item;
+
+            queries = queries.then(() => createRepairLineItem(invoiceId, repairItemPartName, repairItemPartDescription, repairItemCost));
+        }
+
+        return queries.then(_ => true).catch(_ => false);
     },
 
     /**
