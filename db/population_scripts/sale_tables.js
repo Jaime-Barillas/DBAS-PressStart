@@ -19,8 +19,8 @@ function randInt(max) {
 
 // generate a random date to be used in the database
 function randomDate() {
-    let minDate = new Date(2013,1,1);
-    let maxDate = new Date(2018,12,31);  
+    let minDate = new Date(2019,1,1);
+    let maxDate = new Date(2019,10,1);  
     // set a minimum date add a random number to it
     // multiply that date by the difference between the min and max date values.  
     // based on documentation from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
@@ -40,7 +40,7 @@ function genSaleInvoice() {
     let saleInvoice = [];
     saleInvoice.push(randInt(50));  //member_id
     saleInvoice.push(randInt(10));  //employee_id
-    saleInvoice.push(randInt(2));   //store_id
+    saleInvoice.push(randInt(2)+1);   //store_id
     saleInvoice.push(randomDate()); //invoice date
     return saleInvoice;
 }
@@ -78,10 +78,11 @@ function genSaleItem() {
     //console.log("Price is " +  JSON.stringify(itemPrice));
     //client.end();
     saleItem.push(randInt(30));  //item_id
-    saleItem.push(randInt(10));  //invoice_id
+    saleItem.push(randInt(100));  //invoice_id
     saleItem.push(randInt(4));   //item_quantity
     //saleItem.push(item * itemPrice[1]);  //sale_price
-    saleItem.push(item * 49.99);  //sale_price
+    saleItem.push(item * (randInt(9) + 0.99));  //sale_price
+    //console.log(item * (randInt(9) + 0.99));
     return saleItem;
 }
 
@@ -104,13 +105,13 @@ exports.seedSalesTables = function() {
         'VALUES($1, $2, $3, $4);';
 
     // Generate data -> queue up the queries -> close the connection.
-    let saleInvoices = Array.from({length: 10}, genSaleInvoice);
+    let saleInvoices = Array.from({length: 100}, genSaleInvoice);
     for (const invoice of saleInvoices) {
         queries = queries.then(() => client.query(insertSaleInvoiceSql, invoice));
     }
 
     // Generate data -> queue up the queries -> close the connection.
-    let saleItems = Array.from({length: 30}, genSaleItem);
+    let saleItems = Array.from({length: 200}, genSaleItem);
     for (const saleItem of saleItems) {
         queries = queries.then(() => client.query(insertSaleItemSql, saleItem));
     }

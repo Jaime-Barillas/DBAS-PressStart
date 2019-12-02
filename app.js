@@ -7,6 +7,7 @@ var db = require('./db/api.js');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var reportRouter = require('./routes/reports');
 
 var app = express();
 
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/reports', reportRouter);
 
 db.initialize();
 
