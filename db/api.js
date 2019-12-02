@@ -267,19 +267,17 @@ exports.Repairs = {
     /**
      * Creates a new Repair order with the specified info.
      *
-     * @param {Object} memberData - Contains the required information for the new member.
-     * @param {String} memberData.email - The new member's email address.
-     * @param {String} memberData.password - The new member's password.
-     * @param {String} memberData.firstName - The new member's given name.
-     * @param {String} memberData.lastName - The new member's surname.
-     * @param {String} memberData.postalCode - The new member's postal code.
-     * @param {String} memberData.phone - The new member's phone number.
-     * @param {Boolean} memberData.mailingList - Whether the new member wishes to receive news letters.
-     * @param {integer} memberData.prefferedStore - Id for the new member's preffered store.
+     * @param {Object} repairInvoice - Contains the required information for the new repair order.
+     * @param {String} repairInvoice.memberId - .
+     * @param {String} repairInvoice.employeeId - The new member's password.
+     * @param {String} repairInvoice.statusId - The new member's given name.
+     * @param {String} repairInvoice.repairInvoiceDescription - The new member's surname.
+     * @param {String} repairInvoice.repairInvoiceLabourHours - The new member's postal code.
+     * @param {String} repairInvoice.repairInvoiceLabourCost - The new member's phone number.
+     * @param {Object} repairLineItems - An array of objects with properties corresponding to tbl_repair_items columns
+     * in camelCase, there is no need to provide the invoice id.
      *
-     * @returns A Promise that contains a JS object representing the newly
-     * created member. If creation of the new member failed, <code>null</code>
-     * is returned.
+     * @returns A Promise that contains true or false.
      *
      * @memberof module:db/api.Repairs
      */
