@@ -40,7 +40,7 @@ function genSaleInvoice() {
     let saleInvoice = [];
     saleInvoice.push(randInt(50));  //member_id
     saleInvoice.push(randInt(10));  //employee_id
-    saleInvoice.push(randInt(3));   //store_id
+    saleInvoice.push(randInt(2)+1);   //store_id
     saleInvoice.push(randomDate()); //invoice date
     return saleInvoice;
 }
