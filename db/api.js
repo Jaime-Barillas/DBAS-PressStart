@@ -1131,11 +1131,11 @@ exports.Reports = {
      * <br/>
      * <code>
      * {
-     *     items_report_name: blah,
-     *     items_report_quantity: blah,
-     *     items_report_price: blah,
+     *     item_report_name: blah,
+     *     item_report_quantity: blah,
+     *     item_report_price: blah,
      *     store_id: blah,
-     *     items_report_date: blah
+     *     item_report_date: blah
      * }
      * </code>
      *
