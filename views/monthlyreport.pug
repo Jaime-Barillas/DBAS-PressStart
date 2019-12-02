@@ -1,6 +1,32 @@
 extends layout
 
 block content
+  //- Google api Charting.
+  script(type='text/javascript').
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+      //define the data used in the chart
+      //format for the array: 
+      //index[0] = [string, string]
+      //index [1 to n] = [item_name, value]
+      var data = google.visualization.arrayToDataTable([
+        ['Name', 'Revenue'],
+        ['Battle Toads', 1032.64],
+        ['Super Mario 64', 125.34],
+        ['Kirbys Dream Land', 53.55],
+        ['Toe Jam & Earl', 32.04],
+        ['Starfox', 341.50],
+        ['Halo', 35.12],
+        ['Final Fantasy III', 565.48],
+
+      ]);
+      var options = {
+      title: 'Sales for the Month of November'
+      };
+      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+      chart.draw(data, options);
+      }   
   table.table.container
     thead
       tr
@@ -18,3 +44,6 @@ block content
           td= row.item_name
           td= row.total_sold
           td= row.total_revenue
+  p 
+    #piechart(style='width: 800px; height: 400px;')  
+  
