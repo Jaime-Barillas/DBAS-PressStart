@@ -20,7 +20,7 @@ function randInt(max) {
 // generate a random date to be used in the database
 function randomDate() {
     let minDate = new Date(2019,1,1);
-    let maxDate = new Date(2019,10,1);  
+    let maxDate = new Date(2019,12,1);  
     // set a minimum date add a random number to it
     // multiply that date by the difference between the min and max date values.  
     // based on documentation from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
