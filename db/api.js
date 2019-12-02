@@ -56,6 +56,30 @@ function createRepairLineItem(repairInvoiceId, repairItemPartName, repairItemPar
                .then(res => res.rows);
 }
 
+function createSale(memberId, employeeId, storeId, saleInvoiceDate) {
+    const createInvoiceSql = `INSERT INTO tbl_sale_invoices(
+                                  member_id,
+                                  employee_id,
+                                  store_id,
+                                  sale_invoice_date
+                              ) VALUES($1, $2, $3, $4)
+                                  RETURNING invoice_id;`;
+
+    return pool.query(createInvoiceSql, [memberId, employeeId, storeId, saleInvoiceDate])
+               .then(res => res.rows[0].invoice_id);
+}
+function createSaleLineItem(invoiceId, itemId, saleItemQuantity, saleItemPrice) {
+    const createLineItemSql = `INSERT INTO tbl_sale_items(
+                                   invoice_id,
+                                   item_id,
+                                   sale_item_quantity,
+                                   sale_item_price
+                               ) VALUES($1, $2, $3, $4);`;
+
+    return pool.query(createLineItemSql, [invoiceId, itemId, saleItemQuantity, saleItemPrice])
+               .then(res => res.rows);
+}
+
 /**
  * Initializes the connection pool to the database. Make sure you run this
  * once before interacting with the database!
@@ -73,6 +97,52 @@ exports.initialize = function() {
  */
 exports.terminate = function() {
     pool.end();
+}
+
+/**
+ * A collection of functions for interacting with the Press Start sales.
+ *
+ * @namespace
+ */
+exports.Sales = {
+    /**
+     * Creates a new Sale order with the specified info.
+     *
+     * @param {Object} repairInvoice - Contains the required information for the new repair order.
+     * @param {String} repairInvoice.memberId - .
+     * @param {String} repairInvoice.employeeId - The new member's password.
+     * @param {String} repairInvoice.statusId - The new member's given name.
+     * @param {String} repairInvoice.repairInvoiceDescription - The new member's surname.
+     * @param {String} repairInvoice.repairInvoiceLabourHours - The new member's postal code.
+     * @param {String} repairInvoice.repairInvoiceLabourCost - The new member's phone number.
+     * @param {Object} repairLineItems - An array of objects with properties corresponding to tbl_repair_items columns
+     * in camelCase, there is no need to provide the invoice id.
+     *
+     * @returns A Promise that contains true or false.
+     *
+     * @memberof module:db/api.Sales
+     */
+    create: function(saleInvoice, saleLineItems) {
+        // TODO: Transactions.
+        let invoiceId;
+        let queries;
+
+        // Invoice
+        queries = createSale(saleInvoice.memberId,
+                             saleInvoice.employeeId,
+                             saleInvoice.storeId,
+                             saleInvoice.saleInvoiceDate)
+                  .then(res => {invoiceId = res; return res;});
+
+        // Line Items
+        for (item of saleLineItems) {
+            let {itemID, saleItemQuantity, saleItemPrice} = item;
+
+            queries = queries.then(() => createSaleLineItem(invoiceId, itemID, saleItemQuantity, saleItemPrice));
+        }
+
+        return queries.then(_ => true).catch(_ => false);
+    },
 }
 
 /**
