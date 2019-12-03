@@ -5,23 +5,17 @@ block content
   script(type='text/javascript').
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawChart);
-    
-   function monthlyChartReport() {
+
+    var express = require('express');
+    var router = express.Router();
+
+    function monthlyChartReport() {
         let monthlyChartSql = fs.readFileSync(path.resolve(__dirname, 'views/monthly_sales_chart.sql'), 'utf8');
 
         return pool.query(monthlyChartSql)
                     .then((console.log(es => res.rows)))
                     .then(res => res.rows);
     }
-
-    
-    //- function initialize() {
-    //-   var opts = {sendMethod: 'auto'};
-
-    //-   var query = new google.visualization.Query('', opts);
-    //-   var monthlyReportSql = fs.readFileSync(path.resolve(__dirname, './db/views/monthly_sales_chart.sql'), 'utf8')
-    //-   monthlyReportSql.send(drawChart);   
-    //- }
 
     function drawChart() {
       //define the data used in the chart
@@ -30,16 +24,17 @@ block content
       //index [1 to n] = [item_name, value]
       
       //var chartData = dat.map(obj => [obj.item_name, obj.total_revenue]);
-      var chartData = monthlyChartReport();
+      var chartData;
+      chartData = monthlyChartReport();
       //var data = getDataTable());
 
-      var data = google.visualization.arrayToDataTable(
+      var data = google.visualization.arrayToDataTable(chartData);
       //-   ['Name', 'Revenue'] + chartData
 
       //-   );
-      //-   var options = {
-      //-   title: 'Sales for the Month of November'
-      //-   };
+        var options = {
+        title: 'Sales for the Month of November'
+        };
       var chart = new google.visualization.PieChart(document.getElementById('piechart'));
       chart.draw(data, options);
     }   
