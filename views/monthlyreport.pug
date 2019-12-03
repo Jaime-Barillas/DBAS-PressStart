@@ -3,30 +3,46 @@ extends layout
 block content
   //- Google api Charting.
   script(type='text/javascript').
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
-      function drawChart() {
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    
+   function monthlyChartReport() {
+        let monthlyChartSql = fs.readFileSync(path.resolve(__dirname, 'views/monthly_sales_chart.sql'), 'utf8');
+
+        return pool.query(monthlyChartSql)
+                    .then((console.log(es => res.rows)))
+                    .then(res => res.rows);
+    }
+
+    
+    //- function initialize() {
+    //-   var opts = {sendMethod: 'auto'};
+
+    //-   var query = new google.visualization.Query('', opts);
+    //-   var monthlyReportSql = fs.readFileSync(path.resolve(__dirname, './db/views/monthly_sales_chart.sql'), 'utf8')
+    //-   monthlyReportSql.send(drawChart);   
+    //- }
+
+    function drawChart() {
       //define the data used in the chart
       //format for the array: 
       //index[0] = [string, string]
       //index [1 to n] = [item_name, value]
-      var data = google.visualization.arrayToDataTable([
-        ['Name', 'Revenue'],
-        ['Battle Toads', 1032.64],
-        ['Super Mario 64', 125.34],
-        ['Kirbys Dream Land', 53.55],
-        ['Toe Jam & Earl', 32.04],
-        ['Starfox', 341.50],
-        ['Halo', 35.12],
-        ['Final Fantasy III', 565.48],
+      
+      //var chartData = dat.map(obj => [obj.item_name, obj.total_revenue]);
+      var chartData = monthlyChartReport();
+      //var data = getDataTable());
 
-      ]);
-      var options = {
-      title: 'Sales for the Month of November'
-      };
+      var data = google.visualization.arrayToDataTable(
+      //-   ['Name', 'Revenue'] + chartData
+
+      //-   );
+      //-   var options = {
+      //-   title: 'Sales for the Month of November'
+      //-   };
       var chart = new google.visualization.PieChart(document.getElementById('piechart'));
       chart.draw(data, options);
-      }   
+    }   
   table.table.container
     thead
       tr

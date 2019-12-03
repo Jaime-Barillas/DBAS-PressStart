@@ -14,6 +14,14 @@ router.get('/monthlyreport', function(req, res, next) {
         res.render('monthlyreport', {dat: data});
     });
 });
+
+router.get('/monthlyreport', function(req, res, next) {
+    let reportPromise = db.Reports.monthlyChartReport();
+    reportPromise.then(data => {
+        res.render('monthlyreport', {theData: data});
+    });
+});
+
 router.get('/itemsalesreport', function(req, res, next) {
     let reportPromise = db.Reports.itemsReportData();
     reportPromise.then(data => {

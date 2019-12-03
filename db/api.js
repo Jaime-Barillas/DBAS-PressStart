@@ -1157,7 +1157,6 @@ exports.Reports = {
         return pool.query(getAllSql)
                    .then(res => res.rows);
     },
-
     /**
      * This functions retrieves report data the last month of sales. The
      * returned data is an array that contains objects of the format:
@@ -1186,5 +1185,13 @@ exports.Reports = {
 
         return pool.query(monthlyReportSql)
                    .then(res => res.rows);
+    },
+
+    monthlyChartReport() {
+        let monthlyChartSql = fs.readFileSync(path.resolve(__dirname, 'views/monthly_sales_chart.sql'), 'utf8');
+
+        return pool.query(monthlyChartSql)
+                    .then()
+                    .then(res => res.rows);
     }
 }
