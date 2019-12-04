@@ -1,79 +1,58 @@
-html
-  include header.pug
+extends header.pug
+
+block content
   body
 
-    // Left Sidebar
-    include sidebar.pug
+  // Left Sidebar
+  include sidebar.pug
 
-// ==============================================================
-// wrapper
-// ==============================================================
-.dashboard-wrapper
-  .dashboard-ecommerce
-    .container-fluid.dashboard-content
-      // ==============================================================
-      // pageheader
-      // ==============================================================
-      .row
-        .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-          .page-header
-            h1.pageheader-title Inventory Search
-      .row
-        .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-          h2
-            | Search Inventory By City
-          hr
-          form
-            .form-group
-              label(for='exampleFormControlSelect1') Select Any City to Search Inventory
-              form.form-inline
-                select#exampleFormControlSelect1.form-control
-                  option Oshawa
-                  option Toronto
-                button.btn.btn-primary.mb-2(type='submit') Search
-      br
-      .row
-        .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-          h2
-            | Search Inventory By Item Number
-          hr
-          form.form-inline
-            .form-group.mx-sm-3.mb-2
-              label.sr-only Item Number
-              input(type='text' placeholder='Item Number')
-            button.btn.btn-primary.mb-2(type='submit') Search
-      // ==============================================================
-      // end pageheader
-      // ==============================================================
-      .ecommerce-widget
+  // ==============================================================
+  // wrapper
+  // ==============================================================
+  .dashboard-wrapper
+    .dashboard-ecommerce
+      .container-fluid.dashboard-content
+        // ==============================================================
+        // pageheader
+        // ==============================================================
         .row
-          // ==============================================================
-          // ==============================================================
-          // recent orders
-          // ==============================================================
-  // ==============================================================
-  // footer
-  // ==============================================================
-  .footer
-    .container-fluid
-      .row
-        .col-xl-6.col-lg-6.col-md-6.col-sm-12.col-12
-          | Copyright &copy; 2018 Concept. All rights reserved. Dashboard by 
-          a(href='https://colorlib.com/wp/') Colorlib
-          | .
-        .col-xl-6.col-lg-6.col-md-6.col-sm-12.col-12
-          .text-md-right.footer-links.d-none.d-sm-block
-            a(href='javascript: void(0);') About
-            a(href='javascript: void(0);') Support
-            a(href='javascript: void(0);') Contact Us
+          .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+            .page-header
+              h1.pageheader-title Inventory Search
+        .row
+          .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+            h2
+              | Search Inventory By City
+            hr
+            form
+              .form-group
+                label(for='exampleFormControlSelect1') Select Any City to Search Inventory
+                form.form-inline
+                  select#exampleFormControlSelect1.form-control
+                    option Oshawa
+                    option Toronto
+                  button.btn.btn-primary.mb-2(type='submit') Search
+        br
+        .row
+          .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+            h2
+              | Search Inventory By Item Number
+            hr
+            form.form-inline
+              .form-group.mx-sm-3.mb-2
+                label.sr-only Item Number
+                input(type='text' placeholder='Item Number')
+              button.btn.btn-primary.mb-2(type='submit') Search
+        // ==============================================================
+        // end pageheader
+        // ==============================================================
+        .ecommerce-widget
+          .row
+            // ==============================================================
+            // ==============================================================
+            // recent orders
+            // ==============================================================
     // ==============================================================
-    // end footer
+    // footer
     // ==============================================================
-  // ==============================================================
-  // end wrapper
-  // ==============================================================
-// ==============================================================
-// end main wrapper
-// ==============================================================
-// Optional JavaScript
-// jquery 3.3.1
+    include footer
