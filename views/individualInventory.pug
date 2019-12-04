@@ -2,34 +2,9 @@ html
   include header.pug
   body
 
-// left sidebar
-// ==============================================================
-.nav-left-sidebar.sidebar-dark
-  .menu-list
-    nav.navbar.navbar-expand-lg.navbar-light
-      a.d-xl-none.d-lg-none(href='#') Dashboard
-      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarNav' aria-controls='navbarNav' aria-expanded='false' aria-label='Toggle navigation')
-        span.navbar-toggler-icon
-      #navbarNav.collapse.navbar-collapse
-        ul.navbar-nav.flex-column
-          li.nav-divider
-            | Menu
-          li.nav-item
-            a.nav-link(href='#')
-              i.fa.fa-fw.fa-user-circle
-              | Customer
-            a.nav-link(href='#')
-              i.fa.fa-fw.fa-rocket
-              | Inventory
-            a.nav-link(href='#')
-              i.fas.fa-fw.fa-inbox
-              | Repairs
-            a.nav-link(href='#')
-              i.fas.fa-fw.fa-chart-pie
-              | Sales
-// ==============================================================
-// end left sidebar
-// ==============================================================
+    // Left Sidebar
+    include sidebar.pug
+
 // ==============================================================
 // wrapper
 // ==============================================================
