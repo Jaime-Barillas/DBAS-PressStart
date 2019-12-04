@@ -35,10 +35,13 @@ app.use('/dashboard', dashboardRouter);
 app.use('/inventorySearchResults', inventorySearchResultsRouter);
 app.use('/staffRepairDetails', staffRepairDetailsRouter);
 
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+db.initialize();
 
 // error handler
 app.use(function(err, req, res, next) {

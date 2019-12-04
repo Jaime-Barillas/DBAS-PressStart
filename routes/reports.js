@@ -1,11 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
+var db = require('../db/api.js');
+
 // import reports model to be used and speak with the DB
 //var report = require('../models/reports')
-
-
-
 
 //var reportQuery = require('../db/api');
 

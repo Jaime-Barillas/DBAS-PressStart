@@ -44,7 +44,26 @@ block content
             // ==============================================================
             // Results
             // ==============================================================
-          
+          table.table.container
+            thead
+              tr
+                th Game
+                th Amount Sold
+                th Price
+                th Date
+            tfoot
+              tr
+                th Game
+                th Amount Sold
+                th Price
+                th Date
+            tbody
+              //- - for (row of dat)
+              //-   tr
+              //-     td= row.item_report_name
+              //-     td= row.item_report_quantity
+              //-     td= row.item_report_price
+              //-     td= row.item_report_date
     // ==============================================================
     // footer
     // ==============================================================
