@@ -1,0 +1,54 @@
+extends header.pug
+
+block content
+  body
+  // Left Sidebar
+  // include sidebar.pug
+
+  // ==============================================================
+  // wrapper
+  // ==============================================================
+  //.dashboard-wrapper
+  //.dashboard-ecommerce
+  .container-fluid.dashboard-content
+    // ==============================================================
+    // pageheader
+    // ==============================================================
+    .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+    .page-header
+      h1.pageheader-title Press Start Oshawa
+    .row
+      .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+        h2
+          | Sort and search:
+        hr
+        table.table
+          tr
+          td
+            .form-inline
+              label(for='sort') Sort by:
+          td
+            .form-inline
+              select#propertyType.select.form-control.input-lg(form='addProperty', name='propertyType')
+                //- option(value='0', selected= true) -- Select --
+                //- option(value='1', selected= property.id == 1) Price
+                //- option(value='2', selected= property.id == 2) Name
+          td
+            .form-inline
+            label(for='search') Search: 
+          td
+            .form-inline
+            input#search.form-control(type='text' required='')
+          td
+            .form-inline
+            button.btn.btn-primary.mb-2(type='submit') Search
+        hr
+        h2
+          | Games:
+        hr 
+        button.btn.btn-primary.mb-2(type='submit') Trade Item
+  // ==============================================================
+  // footer
+  // ==============================================================
+  include footer

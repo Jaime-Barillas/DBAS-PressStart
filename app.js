@@ -6,6 +6,7 @@ var logger = require('morgan');
 var db = require('./db/api.js');
 
 var indexRouter = require('./routes/index');
+var homePageRouter = require('./routes/homePage');
 var usersRouter = require('./routes/users');
 var reportRouter = require('./routes/reports');
 var inventorySearchRouter = require('./routes/inventorySearch');
@@ -34,6 +35,7 @@ app.use('/individualInventory', individualInventoryRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/inventorySearchResults', inventorySearchResultsRouter);
 app.use('/staffRepairDetails', staffRepairDetailsRouter);
+app.use('/homePage', homePageRouter);
 
 
 // catch 404 and forward to error handler
