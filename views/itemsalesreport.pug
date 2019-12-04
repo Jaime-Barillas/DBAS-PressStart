@@ -23,10 +23,10 @@ block content
               ul.navbar-nav.ml-auto.navbar-right-top            
                 li.nav-item
                   .top-search-bar
-                    a(href="./reports/monthlyreport") Monthly Report                   
+                    a(href="./monthlyreport") Monthly Report                   
                 li.nav-item
                   .top-search-bar
-                    a(href="./reports/itemsalesreport") Item Sales Report                  
+                    a(href="./itemsalesreport") Item Sales Report                  
 
               
               
@@ -58,12 +58,12 @@ block content
                 th Price
                 th Date
             tbody
-              //- - for (row of dat)
-              //-   tr
-              //-     td= row.item_report_name
-              //-     td= row.item_report_quantity
-              //-     td= row.item_report_price
-              //-     td= row.item_report_date
+              - for (row of dat)
+                tr
+                  td= row.item_report_name
+                  td= row.item_report_quantity
+                  td= row.item_report_price
+                  td= row.item_report_date
     // ==============================================================
     // footer
     // ==============================================================
