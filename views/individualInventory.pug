@@ -1,112 +1,91 @@
-html
-  include header.pug
+extends header.pug
+
+block content
   body
 
-    // Left Sidebar
-    include sidebar.pug
+  // Left Sidebar
+  include sidebar.pug
 
-// ==============================================================
-// wrapper
-// ==============================================================
-.dashboard-wrapper
-  .dashboard-ecommerce
-    .container-fluid.dashboard-content
-      // ==============================================================
-      // pageheader
-      // ==============================================================
-      .row
-        .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-          .page-header
-            h1.pageheader-title Individual Inventory Search Results
-      .row
-        .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-          h2
-            label(for='exampleFormControlSelect1') Store Name: 
-            label Oshawa
-          hr
-          form.form-inline
-            .form-group.mx-sm-3.mb-2
-              label.sr-only Item Name
-              input(type='text' placeholder='Item Name')
-            button.btn.btn-primary.mb-2(type='submit') Search
-      br
-      .row
-        .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-          h2
-            | Results:
-          hr
-          table.table
-            tr
-              td
-                .form-inline
-                  label(for='name') Item Name: 
-              td
-                .form-inline
-                  input#name.form-control(type='text' required='')
-              td
-                .form-inline
-                  label(for='telephone') Item Description: 
-              td
-                .form-inline
-                  textarea#comment.form-control(rows='5')
-            tr
-              td
-                .form-inline
-                  label(for='address') Item Sales Price: 
-              td
-                .form-inline
-                  input#address.form-control(type='text' required='')
-              td
-                .form-inline
-                  label(for='address') Quantity Available:
-              td
-                .form-inline
-                  input#address.form-control(type='text' required='')
-            tr
-              td
-                .form-inline
-                  label(for='address') Item MSRP: 
-              td
-                .form-inline
-                  input#address.form-control(type='text' required='')
-              td
-                .form-inline
-                  label(for='address') Item Condition: 
-              td
-                .form-inline
-                  input#address.form-control(type='text' required='')
-      // ==============================================================
-      // end pageheader
-      // ==============================================================
-      .ecommerce-widget
+  // ==============================================================
+  // wrapper
+  // ==============================================================
+  .dashboard-wrapper
+    .dashboard-ecommerce
+      .container-fluid.dashboard-content
+        // ==============================================================
+        // pageheader
+        // ==============================================================
         .row
-          // ==============================================================
-          // ==============================================================
-          // recent orders
-          // ==============================================================
-  // ==============================================================
-  // footer
-  // ==============================================================
-  .footer
-    .container-fluid
-      .row
-        .col-xl-6.col-lg-6.col-md-6.col-sm-12.col-12
-          | Copyright &copy; 2018 Concept. All rights reserved. Dashboard by 
-          a(href='https://colorlib.com/wp/') Colorlib
-          | .
-        .col-xl-6.col-lg-6.col-md-6.col-sm-12.col-12
-          .text-md-right.footer-links.d-none.d-sm-block
-            a(href='javascript: void(0);') About
-            a(href='javascript: void(0);') Support
-            a(href='javascript: void(0);') Contact Us
-  // ==============================================================
-  // end footer
-  // ==============================================================
-// ==============================================================
-// end wrapper
-// ==============================================================
-// ==============================================================
-// end main wrapper
-// ==============================================================
-// Optional JavaScript
-// jquery 3.3.1
+          .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+            .page-header
+              h1.pageheader-title Individual Inventory Search Results
+        .row
+          .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+            h2
+              label(for='exampleFormControlSelect1') Store Name: 
+              label Oshawa
+            hr
+            form.form-inline
+              .form-group.mx-sm-3.mb-2
+                label.sr-only Item Name
+                input(type='text' placeholder='Item Name')
+              button.btn.btn-primary.mb-2(type='submit') Search
+        br
+        .row
+          .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+            h2
+              | Results:
+            hr
+            table.table
+              tr
+                td
+                  .form-inline
+                    label(for='name') Item Name: 
+                td
+                  .form-inline
+                    input#name.form-control(type='text' required='')
+                td
+                  .form-inline
+                    label(for='telephone') Item Description: 
+                td
+                  .form-inline
+                    textarea#comment.form-control(rows='5')
+              tr
+                td
+                  .form-inline
+                    label(for='address') Item Sales Price: 
+                td
+                  .form-inline
+                    input#address.form-control(type='text' required='')
+                td
+                  .form-inline
+                    label(for='address') Quantity Available:
+                td
+                  .form-inline
+                    input#address.form-control(type='text' required='')
+              tr
+                td
+                  .form-inline
+                    label(for='address') Item MSRP: 
+                td
+                  .form-inline
+                    input#address.form-control(type='text' required='')
+                td
+                  .form-inline
+                    label(for='address') Item Condition: 
+                td
+                  .form-inline
+                    input#address.form-control(type='text' required='')
+        // ==============================================================
+        // end pageheader
+        // ==============================================================
+        .ecommerce-widget
+          .row
+            // ==============================================================
+            // ==============================================================
+            // recent orders
+            // ==============================================================
+    // ==============================================================
+    // footer
+    // ==============================================================
+    include footer

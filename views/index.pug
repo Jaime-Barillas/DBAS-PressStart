@@ -1,6 +1,39 @@
-extends layout
+extends header.pug
 
 block content
-  h1= title
-  p Welcome to #{title}
-  p Checking changes
+  body
+
+  // Left Sidebar
+  //include sidebar.pug
+
+  // ==============================================================
+  // wrapper  commented wrappers may be uncommented when enabling sidebar.
+  // ==============================================================
+  //.dashboard-wrapper 
+  //.dashboard-ecommerce
+  .container-fluid.dashboard-content
+    // ==============================================================
+    // pageheader
+    // ==============================================================
+    .row
+      .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+        .page-header
+          h1.pageheader-title Welcome to Press Start
+    .row
+      .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+        div
+          h3
+            | Welcome to the Press Start Home Page. Register / Login to keep track of your reservations.
+    // ==============================================================
+    // end pageheader
+    // ==============================================================
+    .ecommerce-widget
+      .row
+        // ==============================================================
+        // ==============================================================
+        // Further Content
+        // ==============================================================
+    // ==============================================================
+    // footer
+    // ==============================================================
+    include footer

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 // import reports model to be used and speak with the DB
-var report = require('../models/reports')
+//var report = require('../models/reports')
 
 
 
@@ -31,22 +31,22 @@ router.get('/', function(req, res, next) {
 });
 
 
-// get all the reports in the DB
-exports.getReports = function (req, res) {
+// // get all the reports in the DB
+// exports.getReports = function (req, res) {
 
-  //search the db for projects using the model
-  report.find({}).exec(function(error, reports){
-      if (error) {
-          console.log("Could not find any reports")
-      } else {
-          //if projects are returned render the pug template
+//   //search the db for projects using the model
+//   report.find({}).exec(function(error, reports){
+//       if (error) {
+//           console.log("Could not find any reports")
+//       } else {
+//           //if projects are returned render the pug template
 
-          res.render('reports', {
-              message: 'successful retrieve!',
-              reports: reports
-          });
-      }
-  })
-};
+//           res.render('reports', {
+//               message: 'successful retrieve!',
+//               reports: reports
+//           });
+//       }
+//   })
+// };
 
 module.exports = router;
