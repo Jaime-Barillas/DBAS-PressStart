@@ -70,7 +70,7 @@ function randomAvailability() {
         
         // While there remain elements to shuffle…
         while (n) {
-        
+            n--;
             // Pick a remaining element…
             i = Math.floor(Math.random() * array.length);
         
@@ -78,7 +78,7 @@ function randomAvailability() {
             if (i in array) {
                 copyArray.push(array[i]);
             delete array[i];
-            n--;
+            //n--;
             }
         }
         return copyArray;
@@ -96,7 +96,7 @@ function randomAvailability() {
     days = days.sort();
 
     // Set days of availability.
-    for (i=0; i<=days.length; i++)
+    for (i=0; i<days.length; i++)
     {
         availabilityString += days[i] + ' ';
     }
@@ -142,7 +142,7 @@ function genMember() {
     member.push(randPostalCode());
     member.push(randPhoneNumber());
     member.push(`${member[2]}.${member[3]}@example.com`);
-    member.push(randNth(['true', 'false']));
+    member.push(randNth(['true', 'false', 'false', 'false', 'false', 'false']));
     
     return member;
 }

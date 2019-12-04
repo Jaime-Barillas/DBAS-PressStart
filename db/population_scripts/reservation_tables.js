@@ -36,8 +36,8 @@ function randNth(array) {
 // generate a reservation "invoice"
 function genReservation() {
     let reservation = [];
-    reservation.push(randInt(2));                   // store to use
-    reservation.push(randInt(50));                  // member reserving
+    reservation.push(randInt(2)+1);                 // store to use
+    reservation.push(randInt(50)+1);                // member reserving
     reservation.push(randomDate());                 // date reserved
     reservation.push(randNth(['true','false']));    // Received?
     return reservation;
@@ -46,10 +46,10 @@ function genReservation() {
 // generate a single reserved item
 function genReservationItem() {
     let reserveItem = [];
-    reserveItem.push(randInt(10));      // hook an reserveItem to a reservation
-    reserveItem.push(randInt(50));      // item to reserve
+    reserveItem.push(randInt(10)+1);    // hook an reserveItem to a reservation
+    reserveItem.push(randInt(50)+1);    // item to reserve
     return reserveItem;
-}
+} 
 
 exports.seedReservationTables = function() {
     let client = new Client({

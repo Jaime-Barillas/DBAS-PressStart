@@ -14,13 +14,13 @@ const invoices = 30;
 const sales = 3;
 
 function randInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
+    return (Math.floor(Math.random() * Math.floor(max)));
 }
 
 // generate a random date to be used in the database
 function randomDate() {
     let minDate = new Date(2019,1,1);
-    let maxDate = new Date(2019,10,1);  
+    let maxDate = new Date(2019,12,1);  
     // set a minimum date add a random number to it
     // multiply that date by the difference between the min and max date values.  
     // based on documentation from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
@@ -38,8 +38,8 @@ function randNth(array) {
 
 function genSaleInvoice() {
     let saleInvoice = [];
-    saleInvoice.push(randInt(50));  //member_id
-    saleInvoice.push(randInt(10));  //employee_id
+    saleInvoice.push(randInt(50)+1);  //member_id
+    saleInvoice.push(randInt(10)+1);  //employee_id
     saleInvoice.push(randInt(2)+1);   //store_id
     saleInvoice.push(randomDate()); //invoice date
     return saleInvoice;
@@ -51,7 +51,7 @@ function genSaleItem() {
         database: 'pressstartdb'
     });
     let saleItem = [];
-    let item = randInt(50);
+    let itemQuantity = randInt(5)+1;
     
     
     // let itemQuery = client.connect();
@@ -77,11 +77,11 @@ function genSaleItem() {
     // }));
     //console.log("Price is " +  JSON.stringify(itemPrice));
     //client.end();
-    saleItem.push(randInt(30));  //item_id
-    saleItem.push(randInt(100));  //invoice_id
-    saleItem.push(randInt(4));   //item_quantity
+    saleItem.push(randInt(30)+1);  //item_id
+    saleItem.push(randInt(100)+1);  //invoice_id
+    saleItem.push(itemQuantity);   //item_quantity
     //saleItem.push(item * itemPrice[1]);  //sale_price
-    saleItem.push(item * (randInt(9) + 0.99));  //sale_price
+    saleItem.push(itemQuantity * (randInt(99) + 0.99));  //sale_price
     //console.log(item * (randInt(9) + 0.99));
     return saleItem;
 }

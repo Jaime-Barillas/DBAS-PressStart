@@ -40,7 +40,7 @@ function randomDate() {
 
 function genTradeInvoice() {
     let tradeInvoice = [];
-    tradeInvoice.push(randInt(10));     // member of trade
+    tradeInvoice.push(randInt(50)+1);     // member of trade
     tradeInvoice.push(randomDate());    // date of teade
     tradeInvoice.push(randNth(['true','false'])) // signed donation
     return tradeInvoice;
@@ -48,19 +48,27 @@ function genTradeInvoice() {
 
 function genTradeItem() {
     let tradeItem = [];
+    let payout = randNth(['credit', 'cash']);
     const cashPrice = 0.8;
-    tradeItem.push(randInt(10));                // invoice to hook to
-    tradeItem.push(randInt(50));                // item being donated
-    tradeItem.push(randNth(['true','false']));  // is donation?
+    tradeItem.push(randInt(30)+1);                // invoice to hook to
+    tradeItem.push(randInt(50)+1);                // item being donated
+    tradeItem.push(randNth(['true','false','false','false','false']));  // is donation?
     // let tradeItemBaseSQL = 'SELECT item_sale_price FROM tbl_items WHERE item_id = $1 '+
     // 'VALUES($1);';
     // tradeItem = tradeItem.then(() => client.query(tradeItemBaseSQL, tradeItem));
     // let tradeConditionSQL = 'SELECT physical_condition_id, box_condition_id, manual_condition_id FROM tbl_conditions WHERE ';
     // tradeConditionSQL
-    let initialPrice = randPrice(100);
+    let initialPrice = randPrice(100)+1;
     tradeItem.push(initialPrice);                           // value offered
-    tradeItem.push(randNth(['credit', 'cash']));            // payout type
-    tradeItem.push(initialPrice*cashPrice);                 // final payout
+    tradeItem.push(payout);                                 // payout type
+    // payout Calculation
+    if (payout == 'cash') {
+        tradeItem.push(initialPrice*cashPrice);                 // final cash payout
+    }
+    else{
+        tradeItem.push(initialPrice);                 // final credit payout
+    }                                  
+    
     return tradeItem;
 }
 
@@ -88,7 +96,7 @@ exports.seedTradeTables = function() {
         queries = queries.then(() => client.query(insertTradeInvoiceSql, tradeInvoice));
     }
 
-    let tradeItems = Array.from({length: 50}, genTradeItem);
+    let tradeItems = Array.from({length: 80}, genTradeItem);
     for (const tradeItem of tradeItems) {
         queries = queries.then(() => client.query(insertTradeItemSql, tradeItem));
     }

@@ -20,7 +20,7 @@ function randPrice(max) {
 
 // Generate random number with a defined maximum.
 function randInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
+    return (Math.floor(Math.random() * Math.floor(max)));
 }
 
 // Generate a random string from defined array
@@ -32,15 +32,15 @@ function randNth(array) {
 function genItem() {
     let item = [];
 
-    item.push(randInt(20));                     // item type id
-    item.push(randInt(3));                      // store id
-    item.push(randInt(25));                     // condition id
-    item.push(randNth(itemNames));              // item name
-    item.push(randPrice(100));                  // store cost
-    item.push(randPrice(100));                  // sale price
-    item.push(randPrice(100));                  // mrsp
-    item.push(randInt(1000));                   // qty in stock
-    item.push('The best game in the world.');   //item description
+    item.push(randInt(2)+1);                        // item type id
+    item.push(randInt(2)+1);                        // store id
+    item.push(randInt(25)+1);                       // condition id
+    item.push(randNth(itemNames));                  // item name
+    item.push(randPrice(100)+1);                    // store cost
+    item.push(randPrice(100)+1);                    // sale price
+    item.push(randPrice(100)+1);                    // mrsp
+    item.push(randInt(1000)+1);                     // qty in stock
+    item.push('The best game in the world.');       //item description
 
     return item;
 }
@@ -48,7 +48,7 @@ function genItem() {
 // function generates an item type
 function genItemType() {
     let itemType = [];
-    let randomizer = randInt(3);
+    let randomizer = randInt(1);
     if (randomizer == 0) {
         itemType.push('new');
         itemType.push('Brand New Item');
@@ -65,7 +65,7 @@ function genItemType() {
 // function generates a box condition
 function genBoxCondition() {
     let boxCondition = [];
-    let randomizer = randInt(4);
+    let randomizer = (randInt(4));
     if (randomizer == 0) {
         boxCondition.push('unsealed');
         boxCondition.push('An unsealed box, never opened');
@@ -93,7 +93,7 @@ function genBoxCondition() {
 // function generates a manual condition
 function genManualCondition() {
     let manualCondition = [];
-    let randomizer = randInt(4);
+    let randomizer = (randInt(4));
     if (randomizer == 0) {
         manualCondition.push('unsealed');
         manualCondition.push('An unsealed game with manual included, never opened');
@@ -121,7 +121,7 @@ function genManualCondition() {
 // function generates a physical condition
 function genPhysicalCondition() {
     let physicalCondition = [];
-    let randomizer = randInt(4);
+    let randomizer = (randInt(4));
     if (randomizer == 0) {
         physicalCondition.push('unsealed');
         physicalCondition.push('An unsealed game, never opened');
@@ -149,9 +149,9 @@ function genPhysicalCondition() {
 // function generates a random condition
 function genCondition() {
     let condition = [];
-        condition.push(randInt(4)); //box condition
-        condition.push(randInt(4)); //manual condition
-        condition.push(randInt(4)); //physical condition
+        condition.push(randInt(4)+1); //box condition
+        condition.push(randInt(4)+1); //manual condition
+        condition.push(randInt(4)+1); //physical condition
 
     return condition;
 }
@@ -193,7 +193,7 @@ exports.seedItemTables = function() {
         'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);';
 
     // Generate data -> queue up the queries -> close the connection.
-    let itemTypes = Array.from({length: 1}, genItemType);
+    let itemTypes = Array.from({length: 2}, genItemType);
     for (const itemType of itemTypes) {
         queries = queries.then(() => client.query(insertItemTypeSql, itemType));
     }

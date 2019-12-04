@@ -150,7 +150,7 @@ switch(process.argv[2]) {
         setupDatabase()
             .then(() => setupTables())
             .then(() => console.log('Table Setup... Done!'))
-            //.then(() => seedTables())
+            .then(() => seedTables())
             .then(() => console.log('Table Seeding... Done!'))
             ;
         break;
