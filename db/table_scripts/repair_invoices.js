@@ -31,9 +31,9 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_repair_invoices(
         repair_invoice_id serial PRIMARY KEY,
-        customer_id integer,
-        employee_id integer,
-        repair_status_id integer,
+        member_id integer REFERENCES tbl_members(member_id) NOT NULL,
+        employee_id integer REFERENCES tbl_employees(employee_id) NOT NULL,
+        repair_status_id integer REFERENCES tbl_repair_status(repair_status_id) NOT NULL,
         repair_invoice_description varchar(120),
         repair_invoice_labour_hours smallint,
         repair_invoice_labour_hours_cost money

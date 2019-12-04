@@ -31,7 +31,7 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_repair_items(
         repair_item_id serial PRIMARY KEY,
-        repair_invoice_id integer,
+        repair_invoice_id integer REFERENCES tbl_repair_invoices(repair_invoice_id) NOT NULL,
         repair_part_name varchar(30),
         repair_item_part_description varchar(120),
         repair_item_cost money

@@ -31,8 +31,8 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_sale_items(
         sale_item_id serial PRIMARY KEY,
-        item_id integer,
-        invoice_id integer,
+        item_id integer REFERENCES tbl_items(item_id) NOT NULL,
+        invoice_id integer REFERENCES tbl_sale_invoices(invoice_id) NOT NULL,
         sale_item_quantity smallint,
         sale_item_price money
         );`)

@@ -32,9 +32,9 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_items(
         item_id serial PRIMARY KEY,
-        item_type_id integer,
-        store_id integer,
-        condition_id integer,
+        item_type_id integer REFERENCES tbl_item_types(item_type_id) NOT NULL,
+        store_id integer REFERENCES tbl_stores(store_id) NOT NULL,
+        condition_id integer REFERENCES tbl_conditions(condition_id) NOT NULL,
         item_name varchar(64),
         item_cost money,
         item_sale_price money,

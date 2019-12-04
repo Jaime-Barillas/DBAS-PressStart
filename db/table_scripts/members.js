@@ -31,13 +31,13 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_members(
         member_id serial PRIMARY KEY,
-        member_password varchar(32),
-        member_preffered_store integer,
-        member_first_name varchar(20),
+        member_password varchar(32) NOT NULL,
+        member_preffered_store integer REFERENCES tbl_stores(store_id) NOT NULL,
+        member_first_name varchar(20) NOT NULL,
         member_last_name varchar(30),
-        member_postal_code varchar(6),
+        member_postal_code varchar(6) NOT NULL,
         member_phone varchar(10),
-        member_email varchar(60),
+        member_email varchar(60) NOT NULL,
         member_mailing_list boolean
         );`)
         .then(() => console.log("members Table Created"))

@@ -31,8 +31,8 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_reservations(
         reservation_id serial PRIMARY KEY,
-        store_id integer,
-        member_id integer,
+        store_id integer REFERENCES tbl_stores(store_id) NOT NULL,
+        member_id integer REFERENCES tbl_members(member_id) NOT NULL,
         reservation_date_reserved timestamp,
         reservation_received boolean
         );`)

@@ -31,9 +31,9 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_conditions(
         condition_id serial PRIMARY KEY,
-        physical_condition_id integer,
-        box_condition_id integer,
-        manual_condition_id integer
+        physical_condition_id integer REFERENCES tbl_physical_conditions(physical_condition_id) NOT NULL,
+        box_condition_id integer REFERENCES tbl_box_conditions(box_condition_id) NOT NULL,
+        manual_condition_id integer REFERENCES tbl_manual_conditions(manual_condition_id) NOT NULL
         );`)
         .then(() => console.log("conditions Table Created"))
         .then(() => client.end());

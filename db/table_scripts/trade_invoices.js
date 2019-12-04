@@ -31,7 +31,7 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_trade_invoices(
         trade_invoice_id serial PRIMARY KEY,
-        member_id integer,
+        member_id integer REFERENCES tbl_members(member_id) NOT NULL,
         trade_invoice_date timestamp,
         trade_invoice_signed boolean
         );`)

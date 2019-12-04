@@ -31,9 +31,9 @@ exports.setupTables = function() {
     // generate table
     return client.query(`CREATE TABLE tbl_sale_invoices(
         invoice_id serial PRIMARY KEY,
-        member_id integer,
-        employee_id integer,
-        store_id integer,
+        member_id integer REFERENCES tbl_members(member_id) NOT NULL,
+        employee_id integer REFERENCES tbl_employees(employee_id) NOT NULL,
+        store_id integer REFERENCES tbl_stores(store_id) NOT NULL,
         sale_invoice_date timestamp
         );`)
         .then(() => console.log("sale_invoices Table Created"))
