@@ -1,0 +1,120 @@
+extends header.pug
+
+block content
+  body
+
+  // Left Sidebar
+  include sidebar.pug
+
+  // ==============================================================
+  // wrapper
+  // ==============================================================
+  .dashboard-wrapper
+    .dashboard-ecommerce
+      .container-fluid.dashboard-content
+        // ==============================================================
+        // pageheader
+        // ==============================================================
+        .row
+          .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+            .page-header
+              h1.pageheader-title Staff Repair Details
+        .row
+          .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+            hr
+            form.form-inline
+              .form-group.mx-sm-3.mb-2
+                label.sr-only Repair ID:
+                input(type='text' placeholder='Repair ID:')
+              button.btn.btn-primary.mb-2(type='submit') Search
+        br
+        .row
+          .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+            h2
+              | Results:
+            hr
+        table.table
+          tr
+            td
+              .form-inline
+                label(for='name') Item Name: 
+            td
+              .form-inline
+                input#name.form-control(type='text' required='')
+            td
+              .form-inline
+                label(for='name') Staff Name: 
+            td
+              .form-inline
+                input#name.form-control(type='text' required='')
+          tr
+            td
+              .form-inline
+                label(for='telephone') Repair ID: 
+            td
+              .form-inline
+                input#name.form-control(type='text' required='')
+            td
+              .form-inline
+                label(for='telephone') Repair Description: 
+            td
+              .form-inline
+                textarea(rows='5')   
+          tr
+            td
+              .form-inline
+                label(for='address') Repair Status: 
+            td
+              select.form-control
+                option Opened
+                option Closed
+            td
+              button.button Add Repair Item
+          tr
+            td
+              table.table(style='min-height: 100px;' width='100%')
+                tr
+                  th
+                    | Cost
+                  th
+                    | Repair Item
+                tr
+                  td
+                  td
+            td
+              button.button Edit
+          tr
+            td
+              .form-inline
+                label(for='address') Sub Total: 
+            td
+              .form-inline
+                input#address.form-control(type='text' required='')
+            td
+              .form-inline
+                label(for='address') Hst: 
+            td
+              .form-inline
+                input#address.form-control(type='text' required='')
+          tr
+            td
+              .form-inline
+                label(for='address') Total: 
+            td
+              .form-inline
+                input#address.form-control(type='text' required='')
+        // ==============================================================
+        // end pageheader
+        // ==============================================================
+        .ecommerce-widget
+          .row
+            // ==============================================================
+            // ==============================================================
+            // recent orders
+            // ==============================================================
+    // ==============================================================
+    // footer
+    // ==============================================================
+    include footer
+    
+
