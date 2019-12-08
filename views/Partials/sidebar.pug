@@ -8,7 +8,7 @@
       #navbarNav.collapse.navbar-collapse
         ul.navbar-nav.flex-column
           li.nav-divider
-            | Menu
+            | Staff Menu
 
           li.nav-item
             a.nav-link(href='/staff/customersearch')
@@ -26,3 +26,23 @@
             a.nav-link(href='/staff/trades')
               i.fa.fa-copy
               | Trades
+            //- Manager sub menu
+            - var managerAuthorized = true
+            - if (managerAuthorized === true)
+              li.nav-divider
+                |  Manager Menu
+              li.nav-item
+                a.nav-link(href='/staff/manager')
+                  i.fa.fa-address-card-o
+                  | Manager Dashboard
+                a.nav-link(href='/staff/manager/managerupdateoffers')
+                  i.fa.fa-plus-square
+                  | Update Offers
+                a.nav-link(href='/staff/manager/payroll')
+                  i.fa.fa-usd
+                  | Payroll
+                a.nav-link(href='/staff/manager/reports')
+                  i.fa.fa-line-chart
+                  | Reports
+
+
