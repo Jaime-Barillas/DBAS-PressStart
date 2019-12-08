@@ -18,9 +18,7 @@ router.get('/inventorySearch', function(req, res, next) {
   res.render('StaffPortal/inventorySearch', { title: 'Inventory' });
 });
 
-router.get('/inventorySearchResults', function(req, res, next) {
-  res.render('StaffPortal/inventorySearchResults', { title: 'Inventory Results' });
-});
+router.post('/inventorySearchResults', employee_controller.inventorySearchResults);
 
 router.get('/individualInventory', function(req, res, next) {
   res.render('StaffPortal/individualInventory', { title: 'Individual Inventory' });

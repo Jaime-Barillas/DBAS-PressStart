@@ -1,6 +1,19 @@
 var db = require('../db/api.js');
 
 
+exports.inventorySearchResults = function(req, res) {
+    let storeId = req.body.storeLocation;
+    let name = req.body.itemName;
+    db.Inventory.search({storeId: storeId, name: name})
+      .then(items => {
+          res.render('StaffPortal/inventorySearchResults',
+                     {
+                         title: 'Inventory Results',
+                         items: items
+                     });
+      });
+}
+
 
 
 
