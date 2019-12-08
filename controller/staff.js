@@ -18,6 +18,22 @@ exports.inventorySearchResults = function(req, res) {
            });
 }
 
+exports.individualInventory = function(req, res) {
+    db.Inventory.search({id: req.params.id})
+      .then(items => {
+          let item = items[0];
+
+          db.Conditions.conditionForItem(item.item_id)
+            .then(condition => res.render('StaffPortal/individualInventory',
+                {
+                    title: 'Individual Inventory',
+                    item: item,
+                    condition: condition
+                }
+            ));
+      });
+}
+
 
 
 

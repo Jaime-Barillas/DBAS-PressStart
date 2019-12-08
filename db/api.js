@@ -315,6 +315,114 @@ exports.Inventory = {
 }
 
 /**
+ * A collection of functions for retrieving the condition of an item.
+ *
+ * @namespace
+ */
+exports.Conditions = {
+
+    /**
+     * This function returns all possible physical conditions.
+     *
+     * @returns An array of all physical conditions.
+     *
+     * @example
+     * let promise = db.Conditions.allPhysical();
+     * promise.then(all => console.log(all));
+     *
+     * @memberof module:db/api.Conditions
+     */
+    allPhysical: function() {
+        return pool.query('SELECT * FROM tbl_physical_conditions;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This function returns all possible box conditions.
+     *
+     * @returns An array of all box conditions.
+     *
+     * @example
+     * let promise = db.Conditions.allBox();
+     * promise.then(all => console.log(all));
+     *
+     * @memberof module:db/api.Conditions
+     */
+    allBox: function() {
+        return pool.query('SELECT * FROM tbl_box_conditions;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This function returns all possible manual conditions.
+     *
+     * @returns An array of all manual conditions.
+     *
+     * @example
+     * let promise = db.Conditions.allManual();
+     * promise.then(all => console.log(all));
+     *
+     * @memberof module:db/api.Conditions
+     */
+    allManual: function() {
+        return pool.query('SELECT * FROM tbl_manual_conditions;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This function returns the conditions of an item in a JS object with the
+     * format:
+     * <br/><br/>
+     * <pre><code>
+     * {                           
+     *     physicalCondition: blah,
+     *     boxCondition: blah,
+     *     manualCondition: blah
+     * }                           
+     * </code></pre>
+     * <br/><br/>
+     *
+     * @returns An array of all manual conditions.
+     *
+     * @example
+     * let promise = db.Conditions.conditionForItem(5);
+     * promise.then(all => console.log(all));
+     *
+     * @memberof module:db/api.Conditions
+     */
+    conditionForItem: function(id) {
+        let conditionSql = `SELECT physical_condition_id,
+                                   box_condition_id,
+                                   manual_condition_id
+                            FROM tbl_conditions
+                            JOIN tbl_items
+                            ON tbl_conditions.condition_id = tbl_items.condition_id
+                            WHERE tbl_items.item_id = $1;`;
+
+        let result = Promise.all([
+            pool.query(conditionSql, [id]).then(res => res.rows[0]),
+            exports.Conditions.allPhysical(),
+            exports.Conditions.allBox(),
+            exports.Conditions.allManual()
+        ]);
+
+        result = result.then(([condition, physicalConditions, boxConditions, manualConditions]) => {
+            let pcondition = physicalConditions.find(con => con.physical_condition_id == condition.physical_condition_id);
+            let bcondition = boxConditions.find(con => con.box_condition_id == condition.box_condition_id);
+            let mcondition = manualConditions.find(con => con.manual_condition_id == condition.manual_condition_id);
+
+            return {
+                physicalCondition: pcondition.physical_condition_name,
+                boxCondition: bcondition.box_condition_name,
+                manualCondition: mcondition.manual_condition_name
+            };
+        });
+
+        return result;
+    }
+}
+
+/**
  * A collection of functions for interacting with the Press Start inventory.
  * Contains functions to retrieve inventory, search for specific inventory,
  * and update inventory.
