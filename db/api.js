@@ -80,6 +80,10 @@ function createSaleLineItem(invoiceId, itemId, saleItemQuantity, saleItemPrice) 
                .then(res => res.rows);
 }
 
+function isSomeVal(val) {
+    return (val !== null && val !== undefined);
+}
+
 /**
  * Initializes the connection pool to the database. Make sure you run this
  * once before interacting with the database!
@@ -243,7 +247,7 @@ exports.Inventory = {
      *
      * @memberof module:db/api.Inventory
      */
-    search: function({id, name, itemType}) {
+    search: function({id, storeId, name, itemType}) {
         // TODO: Parameter validation.
         const searchByIdSql = `SELECT * FROM tbl_items
                                    WHERE item_id = $1;`;
@@ -260,22 +264,23 @@ exports.Inventory = {
             // These entries provide an ordered mapping from column name to
             // the search pattern.
             let entries = [
+                ['store_id', storeId],
                 ['item_name', name],
                 ['item_type_id', itemType]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of id, name, or itemType.
             if (entries.length === 0) {
-                throw new Error('Must specify at least one of: id, name, or itemType');
+                throw new Error('Must specify at least one of: id, storeId, name, or itemType');
             }
 
             // The meat of the function:
 
             // We know that if we reached this code, entries has at least one
-            // value inside it. We only need to test for the second one.
+            // value inside it. We only need to test for the second anh third one.
             // The first entry will be added to the where clause
             // but second entry must have an AND prepended.
-            let [first, second] = entries;
+            let [first, ...rest] = entries;
 
             if (first[0] == 'item_name') {
                 searchSql += `${first[0]} ILIKE $1 || '%'`;
@@ -283,10 +288,22 @@ exports.Inventory = {
                 searchSql += `${first[0]} = $1`;
             }
 
-            if (second) {
-                searchSql += ` AND ${second[0]} = $2`;
+            if (rest) {
+                for (var i = 0; i < 2; i++) {
+                    if (rest[i]){
+                        let [field] = rest[i];
+
+                        if (field === 'item_name') {
+                            searchSql += ` AND ${field} ILIKE $${i + 2} || '%'`;
+                        } else {
+                            searchSql += ` AND ${field} = $${i + 2}`;
+                        }
+                    }
+                }
             }
             searchSql += ';';
+            console.log(searchSql);
+            console.log(entries);
 
             result = pool.query(searchSql, entries.map(entry => entry[1]));
         }
@@ -445,7 +462,7 @@ exports.Repairs = {
             let entries = [
                 ['tbl_members.member_first_name', memberFirstName],
                 ['tbl_members.member_last_name', memberLastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of memberFirstName, or memberLastName.
             if (entries.length === 0) {
@@ -598,7 +615,7 @@ exports.Trades = {
             let entries = [
                 ['tbl_members.member_first_name', memberFirstName],
                 ['tbl_members.member_last_name', memberLastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of memberFirstName, or memberLastName.
             if (entries.length === 0) {
@@ -754,7 +771,7 @@ exports.Reservations = {
             let entries = [
                 ['tbl_members.member_first_name', memberFirstName],
                 ['tbl_members.member_last_name', memberLastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of memberFirstName, or memberLastName.
             if (entries.length === 0) {
@@ -934,7 +951,7 @@ exports.Members = {
                 ['member_email', email],
                 ['member_first_name', firstName],
                 ['member_last_name', lastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of email, firstName, or lastName.
             if (entries.length === 0) {
@@ -1092,7 +1109,7 @@ exports.Employees = {
                 ['employee_email', email],
                 ['employee_first_name', firstName],
                 ['employee_last_name', lastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of email, firstName, or lastName.
             if (entries.length === 0) {
