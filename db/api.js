@@ -1134,6 +1134,30 @@ exports.Employees = {
 }
 
 /**
+ * A collection of functions for retrieving store info.
+ *
+ * @namespace
+ */
+exports.Stores = {
+    /**
+     * This function returns all Press Start stores.
+     *
+     * @returns An array of all Press Start stores.
+     *
+     * @example
+     * // Log all stores to the console.
+     * let promise = db.Stores.all();
+     * promise.then(allStores => console.log(allStores));
+     *
+     * @memberof module:db/api.Stores
+     */
+    all: function() {
+        return pool.query('SELECT * from tbl_stores;')
+                   .then(res => res.rows);
+    }
+}
+
+/**
  * A collection of functions for retrieving data to generate reports.
  *
  * @namespace
