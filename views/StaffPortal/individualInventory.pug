@@ -13,60 +13,24 @@ block content
   // ==============================================================
   .row
     .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-      h2
-        label(for='exampleFormControlSelect1') Store Name: 
-        label Oshawa
-      hr
-      form.form-inline
-        .form-group.mx-sm-3.mb-2
-          label.sr-only Item Name
-          input(type='text' placeholder='Item Name')
-        button.btn.btn-primary.mb-2(type='submit') Search
-  br
-  .row
-    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-      h2
-        | Results:
+      h2= item.item_name
       hr
       table.table
         tr
-          td
-            .form-inline
-              label(for='name') Item Name: 
-          td
-            .form-inline
-              input#name.form-control(type='text' required='')
-          td
-            .form-inline
-              label(for='telephone') Item Description: 
-          td
-            .form-inline
-              textarea#comment.form-control(rows='5')
+          td Description
+          td(colspan='3')= item.item_description
         tr
-          td
-            .form-inline
-              label(for='address') Item Sales Price: 
-          td
-            .form-inline
-              input#address.form-control(type='text' required='')
-          td
-            .form-inline
-              label(for='address') Quantity Available:
-          td
-            .form-inline
-              input#address.form-control(type='text' required='')
+          td Physical Condition
+          td= condition.physicalCondition
+          td Quantity
+          td= item.item_stock_quantity
         tr
-          td
-            .form-inline
-              label(for='address') Item MSRP: 
-          td
-            .form-inline
-              input#address.form-control(type='text' required='')
-          td
-            .form-inline
-              label(for='address') Item Condition: 
-          td
-            .form-inline
-              input#address.form-control(type='text' required='')
-
-  
+          td Box Condition
+          td= condition.boxCondition
+          td Sales Price
+          td= item.item_sale_price
+        tr
+          td Manual Condition
+          td= condition.manualCondition
+          td MSRP
+          td= item.item_mrsp

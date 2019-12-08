@@ -20,9 +20,7 @@ router.get('/inventorySearch', function(req, res, next) {
 
 router.post('/inventorySearchResults', employee_controller.inventorySearchResults);
 
-router.get('/individualInventory', function(req, res, next) {
-  res.render('StaffPortal/individualInventory', { title: 'Individual Inventory' });
-});
+router.get('/individualInventory/:id', employee_controller.individualInventory);
 
 router.get('/login', function(req, res, next) {
   res.render('StaffPortal/login', { title: 'Login Page' });
