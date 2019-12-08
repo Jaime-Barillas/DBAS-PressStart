@@ -9,26 +9,31 @@ block content
       form(method='POST' action='/')
         div.form-group
           label(for='fname') First Name:
-          input#name.form-control(type='text', placeholder='first' name='fname')
+          input#name.form-control(type='text', placeholder='first' name='fname' required)
         div.form-group
           label(for='lname') Last Name:
-          input#name.form-control(type='text', placeholder='last' name='lname')
+          input#name.form-control(type='text', placeholder='last' name='lname' required)
         div.form-group
           label(for='email') Email:
-          input#email.form-control(type='email', placeholder='name@email.com' name='email')
+          input#email.form-control(type='email', placeholder='name@email.com' name='email' required)
         div.form-group
           label(for='pass1') Password:
-          input#password.form-control(type='password', placeholder='password' name='pass1')
+          input#password.form-control(type='password', placeholder='password' name='pass1' required)
         div.form-group
           label(for='pass2') Confirm Password:
-          input#password.form-control(type='password', placeholder='password' name='pass2')
+          input#password.form-control(type='password', placeholder='password' name='pass2' required)
         div.form-group
           label(for='postalcode') Hourly Rate:
           input#rate.form-control(type='text', placeholder='15.00' name='rate')
         div.form-group
           p Preferred Store
           label(for='availability') Availability:
-           input#availability.form-control(type='text', placeholder='Monday, Tuesday' name='availability')
+          input#availability.form-control(type='text', placeholder='Monday, Tuesday' name='availability')
         div.form-group
-        button.btn.btn-primary.btn-block(type='submit') Update
-        button.btn.btn-primary.btn-block(type='submit') Cancel
+          table.table
+            tr
+              td
+                button.btn.btn-primary.btn-block(type='submit') Update
+              td
+                button.btn.btn-primary.btn-block(type='submit') Cancel 
+       
