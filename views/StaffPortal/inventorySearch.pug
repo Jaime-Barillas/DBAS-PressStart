@@ -1,0 +1,43 @@
+extends ../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Inventory Search
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      h2
+        | Search Inventory By Store
+      hr
+      form
+        .form-group
+          label(for='exampleFormControlSelect1') Select Any Store to Search Inventory
+          form.form-inline
+            select#exampleFormControlSelect1.form-control
+              option Oshawa
+              option Toronto
+            button.btn.btn-primary.mb-2(type='submit') Search
+  br
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      h2
+        | Search Inventory By Item Name
+      hr
+      form.form-inline
+        .form-group.mx-sm-3.mb-2
+          label.sr-only Item Name
+          input(type='text' placeholder='Item Name')
+        button.btn.btn-primary.mb-2(type='submit') Search
+  // ==============================================================
+  // end pageheader
+  // ==============================================================
+  .ecommerce-widget
+    .row
+      // ==============================================================
+      // ==============================================================
+      // recent orders
+      // ==============================================================

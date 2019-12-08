@@ -1,0 +1,19 @@
+doctype html
+html
+  head
+    include header.pug
+  body
+    .dashboard-main-wrapper
+      include navbar
+
+      include sidebar
+  
+      // ==============================================================
+      // content wrapper
+      // ==============================================================
+      .dashboard-wrapper
+        .dashboard-ecommerce
+          .container-fluid.dashboard-content
+            block content
+  
+            include footer

@@ -27,23 +27,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', customerRouter);
-app.use('/index', customerRouter);
-app.use('/login', customerRouter);
-app.use('/register', customerRouter);
-app.use('/reserve', customerRouter);
-app.use('/individualInventory', customerRouter);
-
-app.use('/dashboard', staffRouter);
-app.use('/inventorySearch', staffRouter);
-app.use('/inventorySearchResults', staffRouter);
-app.use('/individualInventory', staffRouter);
-app.use('/repairDetails', staffRouter);
-
-// app.use('/reports', staffRouter);
-//app.use('/users', usersRouter);
-//app.use('/homePage', homePageRouter);
-
+app.use('/customer', customerRouter);
+app.use('/staff', staffRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
