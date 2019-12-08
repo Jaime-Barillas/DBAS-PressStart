@@ -302,8 +302,6 @@ exports.Inventory = {
                 }
             }
             searchSql += ';';
-            console.log(searchSql);
-            console.log(entries);
 
             result = pool.query(searchSql, entries.map(entry => entry[1]));
         }

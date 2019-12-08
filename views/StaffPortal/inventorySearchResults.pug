@@ -26,8 +26,16 @@ block content
         | Results:
       hr
       table#inventoryResult
-        th
         tr
+          th Item Id
+          th Name
+          th Description
+        - for (item of items)
+          tr.clickable-row
+            td= item.item_id
+            td(style='padding: 0px 10px')
+              a(href=`individualInventory/${item.item_id}`)= item.item_name
+            td= item.item_description
   // ==============================================================
   // end pageheader
   // ==============================================================
