@@ -14,32 +14,27 @@ block content
         h3
           p This Payroll Portal allows you to search, add and update employees. 
   .row
-    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-    h3
-      | Employee search:
-    hr
-    table.table
-      tr
-        td
-          .form-inline
-            label(for='sort') Sort by:
-        td
-          .form-inline
-            select#propertyType.select.form-control.input-lg(form='addProperty', name='propertyType')
-              option(value='0', selected= true) -- Select --
-              //- option(value='1', selected= property.id == 1) Price
-              //- option(value='2', selected= property.id == 2) Name
-        td
-          .form-inline
-          label(for='search') Search: 
-        td
-          .form-inline
-          input#search.form-control(type='text' required='')
-        td
-          .form-inline
-          button.btn.btn-primary.mb-2(type='submit') Search
-      tr
-        td(colspan="3")
+    .col-xl-8.col-lg-8.col-md-8.col-sm-8.col-8.offset-2
+      form.form-block.justify-content-center(method='post' action='./inventorySearchResults')
+        h4
+          | Employee search:
+        hr
+        
+        table.table.table-responsive
+          tr  
+            td.col-4
+              .form-block
+                input#search.form-control(type='text' required='')
+            td.col-2
+              .form-inline
+                button.btn.btn-primary.mb-2(type='submit') Search
+            td.col-2
+              .form-inline
+                button.btn.btn-primary.mb-2(type='submit') Add Employee
+          tr
+            td.col-7(colspan="3")
+              h4 Results
+
   // ==============================================================
   // end pageheader
   // ==============================================================
