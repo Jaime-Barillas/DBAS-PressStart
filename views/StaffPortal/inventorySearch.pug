@@ -11,23 +11,14 @@ block content
   .row
     .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
       h2
-        | Search Inventory By Store
-      hr
-      form.form-inline(method='post' action='./inventorySearchResults')
-        .form-group
-          label(for='storeLocation') Select Any Store to Search Inventory:
-          select#storeLocation.form-control(name='storeLocation' style='margin: 0px 10px;')
-            option(value='0') Oshawa
-            option(value='1') Toronto
-          button.btn.btn-primary.mb-2(type='submit') Search
-  br
-  .row
-    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-      h2
         | Search Inventory By Item Name
       hr
-      form.form-inline(method='post' action='./inventorySearchResults')
+      form.form-inline.justify-content-center(method='post' action='./inventorySearchResults')
         .form-group.mx-sm-3.mb-2
+          | Store
+          select#storeLocation.form-control(name='storeLocation' style='margin: 0px 20px;')
+            option(value='0') Oshawa
+            option(value='1') Toronto
           label.sr-only(for='itemName') Item Name
           input#itemName(type='text' name='itemName' placeholder='Item Name')
         button.btn.btn-primary.mb-2(type='submit') Search
