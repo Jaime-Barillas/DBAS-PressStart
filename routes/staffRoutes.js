@@ -26,13 +26,9 @@ router.get('/login', function(req, res, next) {
   res.render('StaffPortal/login', { title: 'Login Page' });
 });
 
-router.get('/tradein', function(req, res, next) {
-  res.render('StaffPortal/tradein', { title: 'Trade In' });
-});
+router.get('/tradein', employee_controller.tradein);
 
-router.get('/tradeindetails', function(req, res, next) {
-  res.render('StaffPortal/tradeindetails', { title: 'Trade In Details' });
-});
+router.get('/tradeindetails/:id', employee_controller.tradeindetails);
 
 router.get('/repairSearch', function(req, res, next) {
   res.render('StaffPortal/repairSearch', { title: 'Repair Search' });
@@ -88,13 +84,9 @@ router.get('/manager/reports', function(req, res, next) {
   res.render('StaffPortal/Manager/reports',{ title: 'Reports' });
 });
 
-router.get('/manager/monthlyreport', function(req, res, next) {
-  res.render('StaffPortal/Manager/monthlyreport',{ title: 'Reports' });
-});
+router.get('/manager/monthlyreport', employee_controller.monthlyReport);
 
-router.get('/manager/itemsalesreport', function(req, res, next) {
-  res.render('StaffPortal/Manager/itemsalesreport',{ title: 'Reports' });
-});
+router.get('/manager/itemsalesreport', employee_controller.itemSalesReport);
 
 router.get('/manager/reportdetails', function(req, res, next) {
   res.send('StaffPortal/Manager/detailedReport',{ title: 'Detailed Reports' });

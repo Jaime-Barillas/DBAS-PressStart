@@ -634,6 +634,8 @@ exports.Trades = {
      * <pre><code> // Format:
      * {
      *     trade_invoice_id: blah,
+     *     member_first_name: blah,
+     *     member_last_name: blah,
      *     trade_invoice_date: blah
      * }
      * </code></pre>
@@ -647,7 +649,16 @@ exports.Trades = {
      * @memberof module:db/api.Trades
      */
     all: function() {
-        return pool.query('SELECT trade_invoice_id, trade_invoice_date FROM tbl_trade_invoices;')
+        let allSql = `SELECT tbl_trade_invoices.trade_invoice_id,
+                             tbl_members.member_last_name,
+                             tbl_members.member_first_name,
+                             tbl_trade_invoices.trade_invoice_date
+                      FROM tbl_trade_invoices
+                      JOIN tbl_members
+                      ON tbl_trade_invoices.member_id = tbl_members.member_id
+                      ORDER BY tbl_trade_invoices.trade_invoice_date desc;`;
+
+        return pool.query(allSql)
                    .then(res => res.rows);
     },
 
@@ -748,7 +759,8 @@ exports.Trades = {
 
     /**
      * This functions retrieves the contents of the tbl_trade_items table for
-     * a specific trade invoice.
+     * a specific trade invoice. Returns an array of JS objects with properties
+     * for  `item_id`, `item_name`, `trade_item_payout`,  `trade_item_final_trade_value`.
      *
      * @summary Retrieves the line items for a trade invoice.
      *
@@ -768,7 +780,15 @@ exports.Trades = {
             throw new Error('Must specify an id (greater than 0)!');
         }
 
-        return pool.query('SELECT * FROM tbl_trade_items WHERE trade_invoice_id = $1', [id])
+        return pool.query(`SELECT tbl_trade_items.trade_item_payout_type,
+                                  tbl_trade_items.trade_item_final_trade_value,
+                                  tbl_items.item_id,
+                                  tbl_items.item_name
+                           FROM tbl_trade_items
+                           JOIN tbl_items
+                           ON tbl_trade_items.item_id = tbl_items.item_id
+                           WHERE trade_invoice_id = $1`,
+                          [id])
                    .then(res => res.rows);
     }
 }
@@ -1275,15 +1295,17 @@ exports.Reports = {
      * This functions retrieves report data for <em>each</em> item sale.
      * In other words, each sale to a customer has its own entry in the
      * returned data. The returned data is an array with objects of the format:
-     * <br/>
+     * <br/><br/>
      * <code>
-     * {
-     *     item_report_name: blah,
+     * <pre>{                              
+     *     item_report_name: blah,    
      *     item_report_quantity: blah,
-     *     item_report_price: blah,
-     *     store_id: blah,
-     *     item_report_date: blah
-     * }
+     *     item_report_price: blah,   
+     *     store_id: blah,            
+     *     item_report_date: blah,    
+     *     item_id: blah,             
+     * }                              
+     * </pre>
      * </code>
      *
      * @summary Retrieves sale data about items. You probably
@@ -1299,7 +1321,7 @@ exports.Reports = {
      * @memberof module:db/api.Reports
      */
     itemsReportData: function() {
-        const getAllSql = 'SELECT * FROM items_report;';
+        const getAllSql = 'SELECT * FROM items_report ORDER BY item_report_date desc;';
 
         return pool.query(getAllSql)
                    .then(res => res.rows);
