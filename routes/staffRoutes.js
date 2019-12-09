@@ -26,13 +26,9 @@ router.get('/login', function(req, res, next) {
   res.render('StaffPortal/login', { title: 'Login Page' });
 });
 
-router.get('/tradein', function(req, res, next) {
-  res.render('StaffPortal/tradein', { title: 'Trade In' });
-});
+router.get('/tradein', employee_controller.tradein);
 
-router.get('/tradeindetails', function(req, res, next) {
-  res.render('StaffPortal/tradeindetails', { title: 'Trade In Details' });
-});
+router.get('/tradeindetails/:id', employee_controller.tradeindetails);
 
 router.get('/repairSearch', function(req, res, next) {
   res.render('StaffPortal/repairSearch', { title: 'Repair Search' });

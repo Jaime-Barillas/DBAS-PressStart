@@ -34,6 +34,32 @@ exports.individualInventory = function(req, res) {
       });
 }
 
+exports.tradein = function(req, res) {
+    let result = db.Trades.all();
+
+    result.then(trades => {
+        res.render('StaffPortal/tradein', {
+            title: 'Trade In',
+            tradeIns: trades
+        });
+    });
+}
+
+exports.tradeindetails = function(req, res) {
+    let result = db.Trades.lineItems(req.params.id);
+
+    result.then(lineItems => {
+        let total = lineItems.reduce(
+            (total, item) => total + Number(item.trade_item_final_trade_value.toString().substr(1)),
+            0
+        );
+        res.render('StaffPortal/tradeindetails', {
+            title: 'Trade In Details',
+            lineItems: lineItems,
+            total: total
+        });
+    });
+}
 
 
 
