@@ -1,0 +1,48 @@
+.nav-left-sidebar.sidebar-dark
+  .menu-list
+    nav.navbar.navbar-expand-lg.navbar-light
+      a.d-xl-none.d-lg-none(href='#') Dashboard
+      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarNav' aria-controls='navbarNav' aria-expanded='false' aria-label='Toggle navigation')
+        span.navbar-toggler-icon
+
+      #navbarNav.collapse.navbar-collapse
+        ul.navbar-nav.flex-column
+          li.nav-divider
+            | Staff Menu
+
+          li.nav-item
+            a.nav-link(href='/staff/customersearch')
+              i.fa.fa-user-circle
+              | Customer
+            a.nav-link(href='/staff/inventorysearch')
+              i.fa.fa-rocket
+              | Inventory
+            a.nav-link(href='/staff/repairs')
+              i.fa.fa-inbox
+              | Repairs
+            a.nav-link(href='/staff/sales')
+              i.fa.fa-pie-chart
+              | Sales
+            a.nav-link(href='/staff/tradein')
+              i.fa.fa-copy
+              | Trades
+            //- Manager sub menu
+            - var managerAuthorized = true
+            - if (managerAuthorized === true)
+              li.nav-divider
+                |  Manager Menu
+              li.nav-item
+                a.nav-link(href='/staff/manager')
+                  i.fa.fa-address-card-o
+                  | Manager Dashboard
+                a.nav-link(href='/staff/manager/managerupdateoffers')
+                  i.fa.fa-plus-square
+                  | Update Offers
+                a.nav-link(href='/staff/manager/payroll')
+                  i.fa.fa-usd
+                  | Payroll
+                a.nav-link(href='/staff/manager/reports')
+                  i.fa.fa-line-chart
+                  | Reports
+
+

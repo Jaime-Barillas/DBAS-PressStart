@@ -1,0 +1,21 @@
+doctype html
+html
+  head
+    include header.pug
+  body
+    .dashboard-main-wrapper
+      include navbar 
+      - var staffLogin = 1
+      //- - staffLogin = window.location.href.indexOf("staff")
+      - if (staffLogin > -1)
+        include sidebar
+  
+      // ==============================================================
+      // content wrapper
+      // ==============================================================
+      .dashboard-wrapper
+        .dashboard-ecommerce
+          .container-fluid.dashboard-content
+            block content
+  
+          include footer

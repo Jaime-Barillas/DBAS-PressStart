@@ -80,6 +80,10 @@ function createSaleLineItem(invoiceId, itemId, saleItemQuantity, saleItemPrice) 
                .then(res => res.rows);
 }
 
+function isSomeVal(val) {
+    return (val !== null && val !== undefined);
+}
+
 /**
  * Initializes the connection pool to the database. Make sure you run this
  * once before interacting with the database!
@@ -243,7 +247,7 @@ exports.Inventory = {
      *
      * @memberof module:db/api.Inventory
      */
-    search: function({id, name, itemType}) {
+    search: function({id, storeId, name, itemType}) {
         // TODO: Parameter validation.
         const searchByIdSql = `SELECT * FROM tbl_items
                                    WHERE item_id = $1;`;
@@ -260,22 +264,23 @@ exports.Inventory = {
             // These entries provide an ordered mapping from column name to
             // the search pattern.
             let entries = [
+                ['store_id', storeId],
                 ['item_name', name],
                 ['item_type_id', itemType]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of id, name, or itemType.
             if (entries.length === 0) {
-                throw new Error('Must specify at least one of: id, name, or itemType');
+                throw new Error('Must specify at least one of: id, storeId, name, or itemType');
             }
 
             // The meat of the function:
 
             // We know that if we reached this code, entries has at least one
-            // value inside it. We only need to test for the second one.
+            // value inside it. We only need to test for the second anh third one.
             // The first entry will be added to the where clause
             // but second entry must have an AND prepended.
-            let [first, second] = entries;
+            let [first, ...rest] = entries;
 
             if (first[0] == 'item_name') {
                 searchSql += `${first[0]} ILIKE $1 || '%'`;
@@ -283,8 +288,18 @@ exports.Inventory = {
                 searchSql += `${first[0]} = $1`;
             }
 
-            if (second) {
-                searchSql += ` AND ${second[0]} = $2`;
+            if (rest) {
+                for (var i = 0; i < 2; i++) {
+                    if (rest[i]){
+                        let [field] = rest[i];
+
+                        if (field === 'item_name') {
+                            searchSql += ` AND ${field} ILIKE $${i + 2} || '%'`;
+                        } else {
+                            searchSql += ` AND ${field} = $${i + 2}`;
+                        }
+                    }
+                }
             }
             searchSql += ';';
 
@@ -296,6 +311,114 @@ exports.Inventory = {
 
     update: function() {
         // TODO: Write me.
+    }
+}
+
+/**
+ * A collection of functions for retrieving the condition of an item.
+ *
+ * @namespace
+ */
+exports.Conditions = {
+
+    /**
+     * This function returns all possible physical conditions.
+     *
+     * @returns An array of all physical conditions.
+     *
+     * @example
+     * let promise = db.Conditions.allPhysical();
+     * promise.then(all => console.log(all));
+     *
+     * @memberof module:db/api.Conditions
+     */
+    allPhysical: function() {
+        return pool.query('SELECT * FROM tbl_physical_conditions;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This function returns all possible box conditions.
+     *
+     * @returns An array of all box conditions.
+     *
+     * @example
+     * let promise = db.Conditions.allBox();
+     * promise.then(all => console.log(all));
+     *
+     * @memberof module:db/api.Conditions
+     */
+    allBox: function() {
+        return pool.query('SELECT * FROM tbl_box_conditions;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This function returns all possible manual conditions.
+     *
+     * @returns An array of all manual conditions.
+     *
+     * @example
+     * let promise = db.Conditions.allManual();
+     * promise.then(all => console.log(all));
+     *
+     * @memberof module:db/api.Conditions
+     */
+    allManual: function() {
+        return pool.query('SELECT * FROM tbl_manual_conditions;')
+                   .then(res => res.rows);
+    },
+
+    /**
+     * This function returns the conditions of an item in a JS object with the
+     * format:
+     * <br/><br/>
+     * <pre><code>
+     * {                           
+     *     physicalCondition: blah,
+     *     boxCondition: blah,
+     *     manualCondition: blah
+     * }                           
+     * </code></pre>
+     * <br/><br/>
+     *
+     * @returns An array of all manual conditions.
+     *
+     * @example
+     * let promise = db.Conditions.conditionForItem(5);
+     * promise.then(all => console.log(all));
+     *
+     * @memberof module:db/api.Conditions
+     */
+    conditionForItem: function(id) {
+        let conditionSql = `SELECT physical_condition_id,
+                                   box_condition_id,
+                                   manual_condition_id
+                            FROM tbl_conditions
+                            JOIN tbl_items
+                            ON tbl_conditions.condition_id = tbl_items.condition_id
+                            WHERE tbl_items.item_id = $1;`;
+
+        let result = Promise.all([
+            pool.query(conditionSql, [id]).then(res => res.rows[0]),
+            exports.Conditions.allPhysical(),
+            exports.Conditions.allBox(),
+            exports.Conditions.allManual()
+        ]);
+
+        result = result.then(([condition, physicalConditions, boxConditions, manualConditions]) => {
+            let pcondition = physicalConditions.find(con => con.physical_condition_id == condition.physical_condition_id);
+            let bcondition = boxConditions.find(con => con.box_condition_id == condition.box_condition_id);
+            let mcondition = manualConditions.find(con => con.manual_condition_id == condition.manual_condition_id);
+
+            return {
+                physicalCondition: pcondition.physical_condition_name,
+                boxCondition: bcondition.box_condition_name,
+                manualCondition: mcondition.manual_condition_name
+            };
+        });
+
+        return result;
     }
 }
 
@@ -445,7 +568,7 @@ exports.Repairs = {
             let entries = [
                 ['tbl_members.member_first_name', memberFirstName],
                 ['tbl_members.member_last_name', memberLastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of memberFirstName, or memberLastName.
             if (entries.length === 0) {
@@ -511,6 +634,8 @@ exports.Trades = {
      * <pre><code> // Format:
      * {
      *     trade_invoice_id: blah,
+     *     member_first_name: blah,
+     *     member_last_name: blah,
      *     trade_invoice_date: blah
      * }
      * </code></pre>
@@ -524,7 +649,16 @@ exports.Trades = {
      * @memberof module:db/api.Trades
      */
     all: function() {
-        return pool.query('SELECT trade_invoice_id, trade_invoice_date FROM tbl_trade_invoices;')
+        let allSql = `SELECT tbl_trade_invoices.trade_invoice_id,
+                             tbl_members.member_last_name,
+                             tbl_members.member_first_name,
+                             tbl_trade_invoices.trade_invoice_date
+                      FROM tbl_trade_invoices
+                      JOIN tbl_members
+                      ON tbl_trade_invoices.member_id = tbl_members.member_id
+                      ORDER BY tbl_trade_invoices.trade_invoice_date desc;`;
+
+        return pool.query(allSql)
                    .then(res => res.rows);
     },
 
@@ -598,7 +732,7 @@ exports.Trades = {
             let entries = [
                 ['tbl_members.member_first_name', memberFirstName],
                 ['tbl_members.member_last_name', memberLastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of memberFirstName, or memberLastName.
             if (entries.length === 0) {
@@ -625,7 +759,8 @@ exports.Trades = {
 
     /**
      * This functions retrieves the contents of the tbl_trade_items table for
-     * a specific trade invoice.
+     * a specific trade invoice. Returns an array of JS objects with properties
+     * for  `item_id`, `item_name`, `trade_item_payout`,  `trade_item_final_trade_value`.
      *
      * @summary Retrieves the line items for a trade invoice.
      *
@@ -645,7 +780,15 @@ exports.Trades = {
             throw new Error('Must specify an id (greater than 0)!');
         }
 
-        return pool.query('SELECT * FROM tbl_trade_items WHERE trade_invoice_id = $1', [id])
+        return pool.query(`SELECT tbl_trade_items.trade_item_payout_type,
+                                  tbl_trade_items.trade_item_final_trade_value,
+                                  tbl_items.item_id,
+                                  tbl_items.item_name
+                           FROM tbl_trade_items
+                           JOIN tbl_items
+                           ON tbl_trade_items.item_id = tbl_items.item_id
+                           WHERE trade_invoice_id = $1`,
+                          [id])
                    .then(res => res.rows);
     }
 }
@@ -754,7 +897,7 @@ exports.Reservations = {
             let entries = [
                 ['tbl_members.member_first_name', memberFirstName],
                 ['tbl_members.member_last_name', memberLastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of memberFirstName, or memberLastName.
             if (entries.length === 0) {
@@ -934,7 +1077,7 @@ exports.Members = {
                 ['member_email', email],
                 ['member_first_name', firstName],
                 ['member_last_name', lastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of email, firstName, or lastName.
             if (entries.length === 0) {
@@ -1092,7 +1235,7 @@ exports.Employees = {
                 ['employee_email', email],
                 ['employee_first_name', firstName],
                 ['employee_last_name', lastName]
-            ].filter(([_, value]) => !!value);
+            ].filter(([_, value]) => isSomeVal(value));
 
             // We must have at least one of email, firstName, or lastName.
             if (entries.length === 0) {
@@ -1119,6 +1262,30 @@ exports.Employees = {
 }
 
 /**
+ * A collection of functions for retrieving store info.
+ *
+ * @namespace
+ */
+exports.Stores = {
+    /**
+     * This function returns all Press Start stores.
+     *
+     * @returns An array of all Press Start stores.
+     *
+     * @example
+     * // Log all stores to the console.
+     * let promise = db.Stores.all();
+     * promise.then(allStores => console.log(allStores));
+     *
+     * @memberof module:db/api.Stores
+     */
+    all: function() {
+        return pool.query('SELECT * from tbl_stores;')
+                   .then(res => res.rows);
+    }
+}
+
+/**
  * A collection of functions for retrieving data to generate reports.
  *
  * @namespace
@@ -1128,15 +1295,17 @@ exports.Reports = {
      * This functions retrieves report data for <em>each</em> item sale.
      * In other words, each sale to a customer has its own entry in the
      * returned data. The returned data is an array with objects of the format:
-     * <br/>
+     * <br/><br/>
      * <code>
-     * {
-     *     item_report_name: blah,
+     * <pre>{                              
+     *     item_report_name: blah,    
      *     item_report_quantity: blah,
-     *     item_report_price: blah,
-     *     store_id: blah,
-     *     item_report_date: blah
-     * }
+     *     item_report_price: blah,   
+     *     store_id: blah,            
+     *     item_report_date: blah,    
+     *     item_id: blah,             
+     * }                              
+     * </pre>
      * </code>
      *
      * @summary Retrieves sale data about items. You probably
@@ -1152,7 +1321,7 @@ exports.Reports = {
      * @memberof module:db/api.Reports
      */
     itemsReportData: function() {
-        const getAllSql = 'SELECT * FROM items_report;';
+        const getAllSql = 'SELECT * FROM items_report ORDER BY item_report_date desc;';
 
         return pool.query(getAllSql)
                    .then(res => res.rows);

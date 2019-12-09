@@ -1,0 +1,51 @@
+extends ../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Welcome Staff
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      div
+        h3
+          p This is the Dashboard page where your are given access to all the inventories and repairs. 
+          p Here you will receive messages from the Press Start Team to help your day to day activities.
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+    h3
+      | Sort and search:
+    hr
+    table.table
+      tr
+      td
+        .form-inline
+          label(for='sort') Sort by:
+      td
+        .form-inline
+          select#propertyType.select.form-control.input-lg(form='addProperty', name='propertyType')
+            option(value='0', selected= true) -- Select --
+            //- option(value='1', selected= property.id == 1) Price
+            option(value='1', id = '1') Price
+            option(value='2', id = '2') Name
+      td
+        .form-inline
+        label(for='search') Search: 
+      td
+        .form-inline
+        input#search.form-control(type='text' required='')
+      td
+        .form-inline
+        button.btn.btn-primary.mb-2(type='submit') Search
+  // ==============================================================
+  // end pageheader
+  // ==============================================================
+  .ecommerce-widget
+    .row
+      // ==============================================================
+      // ==============================================================
+      // recent orders
+      // ==============================================================

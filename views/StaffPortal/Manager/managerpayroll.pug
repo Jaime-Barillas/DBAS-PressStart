@@ -1,0 +1,46 @@
+extends ../../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Employee Payroll
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      div
+        h3
+          p This Payroll Portal allows you to search, add and update employees. 
+  .row
+    .col-xl-8.col-lg-8.col-md-8.col-sm-8.col-8.offset-2
+      form.form-block.justify-content-center(method='post' action='./inventorySearchResults')
+        h4
+          | Employee search:
+        hr
+        
+        table.table.table-responsive
+          tr  
+            td.col-4
+              .form-block
+                input#search.form-control(type='text' required='')
+            td.col-2
+              .form-inline
+                button.btn.btn-primary.mb-2(type='submit') Search
+            td.col-2
+              .form-inline
+                a.btn.btn-primary.mb-2(href='payroll/employeeentry', role='button') Add Employee
+          tr
+            td.col-7(colspan="3")
+              h4 Results
+
+  // ==============================================================
+  // end pageheader
+  // ==============================================================
+  .ecommerce-widget
+    .row
+      // ==============================================================
+      // ==============================================================
+      // recent orders
+      // ==============================================================

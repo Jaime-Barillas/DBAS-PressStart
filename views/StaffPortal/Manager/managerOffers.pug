@@ -1,0 +1,50 @@
+extends ../../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-9.col-lg-9.col-md-9.col-sm-9.col-9
+      .page-header
+        h1.pageheader-title Update Offers
+    // ==============================================================
+    // end pageheader
+    // ==============================================================
+    .col-xl-3.col-lg-3.col-md-3.col-sm-3.col-3
+      .page-header
+        h1.pageheader-title Current Offers
+  .row
+    .col-xl-9.col-lg-9.col-md-9.col-sm-9.col-9
+      div.table-responsive
+        table.table
+          tr
+            th(colspan="3")
+              .form-inline.justify-content-center
+                label(for='name') Update Offer 
+          tr
+            td(colspan="3")
+              .form-inline
+              textarea#offerupdate.form-control(rows='5' placeholder='Describe the offer')
+          tr
+            td(colspan="3")
+              .form-inline.justify-content-center
+              label(for='ck1') Add to Customer Front Page: 
+              input(type='checkbox' name='frontpage' value='frontpage')
+          tr
+            td.text-left
+              button.btn.btn-primary.btn-block(type='submit') Add 
+            td.text-center
+              button.btn.btn-primary.btn-block(type='submit') Delete
+            td.text-right
+              button.btn.btn-primary.btn-block(type='submit') Email Offer 
+    .col-xl-3.col-lg-3.col-md-3.col-sm-3.col-3
+      div
+        h4
+          p Take 20% off used product!
+          | Valid until Jan 1, 2020.  
+
+  
+  
+
+

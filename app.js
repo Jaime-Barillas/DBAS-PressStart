@@ -5,15 +5,15 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var db = require('./db/api.js');
 
-var indexRouter = require('./routes/index');
-var homePageRouter = require('./routes/homePage');
+//var indexRouter = require('./routes/index');
+var customerRouter = require('./routes/custRoutes');
+var staffRouter = require('./routes/staffRoutes');
 var usersRouter = require('./routes/users');
-var reportRouter = require('./routes/reports');
-var inventorySearchRouter = require('./routes/inventorySearch');
-var individualInventoryRouter = require('./routes/individualInventory');
-var dashboardRouter = require('./routes/dashboard');
-var inventorySearchResultsRouter = require('./routes/inventorySearchResults')
-var staffRepairDetailsRouter = require('./routes/staffRepairDetails')
+//var inventorySearchRouter = require('./routes/inventorySearch');
+//var individualInventoryRouter = require('./routes/individualInventory');
+// var dashboardRouter = require('./routes/dashboard');
+// var inventorySearchResultsRouter = require('./routes/inventorySearchResults')
+// var staffRepairDetailsRouter = require('./routes/staffRepairDetails')
 
 var app = express();
 
@@ -27,16 +27,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/reports', reportRouter);
-app.use('/inventorySearch', inventorySearchRouter);
-app.use('/individualInventory', individualInventoryRouter);
-app.use('/dashboard', dashboardRouter);
-app.use('/inventorySearchResults', inventorySearchResultsRouter);
-app.use('/staffRepairDetails', staffRepairDetailsRouter);
-app.use('/homePage', homePageRouter);
-
+app.use('/customer', customerRouter);
+app.use('/staff', staffRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

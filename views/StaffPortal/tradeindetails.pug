@@ -1,0 +1,28 @@
+extends ../Partials/layout.pug
+
+block content
+  // pageheader
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Trade-In Details
+      hr
+
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      table.form-inline.justify-content-center
+        tr
+          th Item Name
+          th(style='padding: 0px 10px;') Payout Type
+          th Trade In Price
+        - for (item of lineItems)
+          tr(style='text-align: center;')
+            td
+              a(href=`../individualInventory/${item.item_id}`)= item.item_name
+            td= item.trade_item_payout_type
+            td= item.trade_item_final_trade_value
+      hr
+
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      h2= 'Total: $ ' + total

@@ -1,0 +1,36 @@
+extends ../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Individual Inventory Search Results
+  // ==============================================================
+  // end pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      h2= item.item_name
+      hr
+      table.table
+        tr
+          td Description
+          td(colspan='3')= item.item_description
+        tr
+          td Physical Condition
+          td= condition.physicalCondition
+          td Quantity
+          td= item.item_stock_quantity
+        tr
+          td Box Condition
+          td= condition.boxCondition
+          td Sales Price
+          td= item.item_sale_price
+        tr
+          td Manual Condition
+          td= condition.manualCondition
+          td MSRP
+          td= item.item_mrsp
