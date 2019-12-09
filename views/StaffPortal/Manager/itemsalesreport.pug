@@ -23,7 +23,7 @@ block content
     .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
       div
         h3
-          p Total sales of items sold on specific days. 
+          p Sales of items by day. 
   // ==============================================================
   // end pageheader
   // ==============================================================
@@ -49,7 +49,8 @@ block content
       tbody
         - for (row of dat)
           tr
-            td= row.item_report_name
+            td
+              a(href=`../individualInventory/${row.item_id}`)= row.item_report_name
             td= row.item_report_quantity
             td= row.item_report_price
             td= row.item_report_date

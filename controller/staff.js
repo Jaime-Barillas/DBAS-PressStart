@@ -61,6 +61,26 @@ exports.tradeindetails = function(req, res) {
     });
 }
 
+exports.monthlyReport = function(req, res) {
+    db.Reports.monthlyReport()
+      .then(report => res.render('StaffPortal/Manager/monthlyreport',
+          {
+              title: 'Reports',
+              dat: report
+          }
+      ));
+}
+
+exports.itemSalesReport = function(req, res) {
+    db.Reports.itemsReportData()
+      .then(report => res.render('StaffPortal/Manager/itemsalesreport',
+          {
+              title: 'Reports',
+              dat: report
+          }));
+}
+
+
 
 
 exports.search = function(req, res) {

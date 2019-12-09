@@ -1295,15 +1295,17 @@ exports.Reports = {
      * This functions retrieves report data for <em>each</em> item sale.
      * In other words, each sale to a customer has its own entry in the
      * returned data. The returned data is an array with objects of the format:
-     * <br/>
+     * <br/><br/>
      * <code>
-     * {
-     *     item_report_name: blah,
+     * <pre>{                              
+     *     item_report_name: blah,    
      *     item_report_quantity: blah,
-     *     item_report_price: blah,
-     *     store_id: blah,
-     *     item_report_date: blah
-     * }
+     *     item_report_price: blah,   
+     *     store_id: blah,            
+     *     item_report_date: blah,    
+     *     item_id: blah,             
+     * }                              
+     * </pre>
      * </code>
      *
      * @summary Retrieves sale data about items. You probably
@@ -1319,7 +1321,7 @@ exports.Reports = {
      * @memberof module:db/api.Reports
      */
     itemsReportData: function() {
-        const getAllSql = 'SELECT * FROM items_report;';
+        const getAllSql = 'SELECT * FROM items_report ORDER BY item_report_date desc;';
 
         return pool.query(getAllSql)
                    .then(res => res.rows);
