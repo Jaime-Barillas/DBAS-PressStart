@@ -30,13 +30,9 @@ router.get('/tradein', employee_controller.tradein);
 
 router.get('/tradeindetails/:id', employee_controller.tradeindetails);
 
-router.get('/repairSearch', function(req, res, next) {
-  res.render('StaffPortal/repairSearch', { title: site + ' | ' + 'Repair Search' });
-});
+router.get('/repairSearch', employee_controller.repairSearch);
 
-router.get('/repairDetails', function(req, res, next) {
-  res.render('StaffPortal/repairDetails', { title: site + ' | ' + 'Repair Details' });
-});
+router.get('/repairDetails/:id', employee_controller.repairDetails);
 
 router.get('/repairSearchResults', function(req, res, next) {
   res.render('StaffPortal/repairSearchResults', { title: site + ' | ' + 'Repair Search Results' });

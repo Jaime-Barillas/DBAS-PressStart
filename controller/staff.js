@@ -1,6 +1,8 @@
 var db = require('../db/api.js');
 
 
+var site = 'Press Start';
+
 exports.inventorySearchResults = function(req, res) {
     let storeId = req.body.storeLocation;
     let name = req.body.itemName;
@@ -78,6 +80,31 @@ exports.itemSalesReport = function(req, res) {
               title: 'Reports',
               dat: report
           }));
+}
+
+exports.repairSearch = function(req, res) {
+    db.Repairs.all()
+      .then(repairs => res.render('StaffPortal/repairSearch',
+          {
+              title: site + ' | ' + 'Repair Search',
+              repairs: repairs
+          }
+      ));
+}
+
+exports.repairDetails = function(req, res) {
+    db.Repairs.search({id: req.params.id})
+      .then(repairs => {
+          let repair = repairs[0];
+          db.Repairs.lineItems(repair.repair_id)
+            .then(lineItems => res.render('StaffPortal/repairDetails',
+              {
+                  title: site + ' | ' + 'Repair Details',
+                  repair: repair,
+                  lineItems: lineItems
+              }
+            ));
+      });
 }
 
 

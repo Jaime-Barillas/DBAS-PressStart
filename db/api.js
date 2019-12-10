@@ -435,10 +435,12 @@ exports.Repairs = {
      * This function returns the id and description of all repairs.
      * The returned data is an array with objects of the format:
      * <br/><br/>
-     * <pre><code> // Format:
+     * <pre>
+     * <code style="display: inline-block;">
      * {
      *     repair_invoice_id: blah,
-     *     repair_invoice_description: blah
+     *     repair_invoice_description: blah,
+     *     repair_member_name: blah
      * }
      * </code></pre>
      *
@@ -451,7 +453,13 @@ exports.Repairs = {
      * @memberof module:db/api.Repairs
      */
     all: function() {
-        return pool.query('SELECT repair_invoice_id, repair_invoice_description FROM tbl_repair_invoices;')
+        return pool.query(`SELECT repair_invoice_id,
+                                  repair_invoice_description,
+                                  (member_first_name || ' ' || member_last_name) As repair_member_name
+                           FROM tbl_repair_invoices
+                           JOIN tbl_members
+                           ON tbl_repair_invoices.member_id = tbl_members.member_id
+                           ORDER BY tbl_repair_invoices.repair_invoice_id DESC;`)
                    .then(res => res.rows);
     },
 

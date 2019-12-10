@@ -1,0 +1,31 @@
+extends ../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Repair Search
+
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      h2
+        | Search Repair By Item Name
+      hr
+      form.form-inline.justify-content-center
+        .form-group.mx-sm-3.mb-2
+          input#itemName(type='text' placeholder='Member Name')
+
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      table.form-inline.justify-content-center.table
+        tr
+          th Member Name
+          th Repair Description
+        - for (repair of repairs)
+          tr
+            td
+              a(href=`./repairDetails/${repair.repair_invoice_id}`)= repair.repair_member_name
+            td= repair.repair_invoice_description
