@@ -1357,3 +1357,66 @@ exports.Reports = {
                    .then(res => res.rows);
     }
 }
+/**
+ * A collection of functions for interacting with the news / mailing list.
+ *
+ * @namespace
+ */
+exports.Offers = {
+    /**
+     * This function inserts news datainto tbl_news. The
+     * returned data is an array that contains objects of the format:
+     * @param {Object} news - Contains the news data.
+     * @param {string} news.title - Contains the title of the article.
+     * @param {String} news.dateAdded - Date of the article in default format.
+     * @param {date} news.article - Article details.
+     * @param {boolean} news.frontPage - boolean to dictate if news will be pushed to front page.
+     *
+     * @returns A Promise that contains a JS object representing the newly
+     * created news item. If creation faileds, <code>null</code>
+     * is returned.
+     *
+     * @memberof module:db/api.Offers
+     */
+    updateOffer({title, article, frontPage }) {
+        var timeStamp = new Date();
+        var year = timeStamp.getFullYear();
+        var month = timeStamp.getMonth() + 1;  // month index value is 0-11 so we must compensate
+        var day = timeStamp.getDate();
+        let date = year + '-' + month + '-' + day;
+
+        let updateOfferSQL = `INSERT INTO tbl_news(news_title, news_date_added, news_article, news_front_page
+            ) VALUES($1, $2, $3, $4)
+            RETURNING *`;
+
+        return pool.query(updateOfferSQL, [title, date, article, frontPage])
+            .then(res => res.rows[0])
+            .catch(_ => null);
+    },
+    /**
+     * Function reads the current offers form tbl_news
+     * 
+     * @memberof module:db/api.Offers
+     */
+    readOffers() {
+        let readOffersSQL = 'SELECT news_title, news_date_added, news_article FROM tbl_news '+
+            'ORDER BY news_date_added desc;';
+
+        return pool.query(readOffersSQL)
+            .then(res => res.rows);
+    },
+    /**
+     * Function reads the current offers form tbl_news used on the front page
+     * 
+     * @memberof module:db/api.Offers
+     */
+    frontPageOffers() {
+        let frontPageOffersSQL = 'SELECT news_title, news_date_added, news_article FROM tbl_news '+
+            'WHERE news_front_page=\'true\' ORDER BY news_date_added desc;';
+
+        return pool.query(frontPageOffersSQL)
+            .then(res => res.rows);
+    }
+
+
+}
