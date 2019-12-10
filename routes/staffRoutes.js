@@ -38,9 +38,7 @@ router.get('/repairSearchResults', function(req, res, next) {
   res.render('StaffPortal/repairSearchResults', { title: site + ' | ' + 'Repair Search Results' });
 });
 
-router.get('/customerSearch', function(req, res, next) {
-  res.render('StaffPortal/customerSearch', { title: site + ' | ' + 'Customers Search' });
-});
+router.get('/customerSearch', employee_controller.customerSearch);
 
 router.get('/', function(req, res, next) {
   res.render('StaffPortal/customerSearchResults', { title: site + ' | ' + 'Customers Search Results' });

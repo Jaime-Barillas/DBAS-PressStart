@@ -1,0 +1,37 @@
+extends ../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Member Search
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      h2
+        | Search Members By Name
+      hr
+      form.form-inline.justify-content-center
+        .form-group.mx-sm-3.mb-2
+          input#itemName(type='text' placeholder='Member Name')
+
+  br
+
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      table.table.form-inline.justify-content-center
+        tr
+          th First Name
+          th Last Name
+          th Email
+          th Phone Number
+          th Mailing List?
+        - for (member of members)
+          tr
+            td= member.member_first_name
+            td= member.member_last_name
+            td= member.member_email
+            td= member.member_phone
+            td= member.member_mailing_list ? 'Yes' : 'No'
