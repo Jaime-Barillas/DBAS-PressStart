@@ -1378,18 +1378,23 @@ exports.Offers = {
      *
      * @memberof module:db/api.Offers
      */
-    updateOffer({title, article, frontPage }) {
+    updateOffer({title, article, frontpage }) {
         var timeStamp = new Date();
         var year = timeStamp.getFullYear();
         var month = timeStamp.getMonth() + 1;  // month index value is 0-11 so we must compensate
         var day = timeStamp.getDate();
         let date = year + '-' + month + '-' + day;
-
+        //console.log(frontpage) - for debugging
+        if (frontpage == 'true') {}
+        else{
+            frontpage = false;
+        }
+            
         let updateOfferSQL = `INSERT INTO tbl_news(news_title, news_date_added, news_article, news_front_page
             ) VALUES($1, $2, $3, $4)
             RETURNING *`;
 
-        return pool.query(updateOfferSQL, [title, date, article, frontPage])
+        return pool.query(updateOfferSQL, [title, date, article, frontpage])
             .then(res => res.rows[0])
             .catch(_ => null);
     },

@@ -109,9 +109,9 @@ db.Employees.all().then(ans => res.render('viewemployees', {title: ans.map(guy =
  */
 exports.updateOffers = function(req, res)
 {
-    let title = req.body.offerupdatetitle
-    let article = req.body.offerupdate
-    let frontpage = req.body.frontPage
+    let title = req.body.title
+    let article = req.body.article
+    let frontpage = req.body.frontpage;
 
     db.Offers.updateOffer({title: title, article: article, frontpage: frontpage})
         .then(res.render('StaffPortal/Manager/manageroffers', {}));
