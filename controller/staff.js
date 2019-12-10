@@ -114,6 +114,6 @@ exports.updateOffers = function(req, res)
     let frontpage = req.body.frontPage
 
     db.Offers.updateOffer({title: title, article: article, frontpage: frontpage})
-        .then(ans => res.render('StaffPortal/Manager/managerupdateoffers', {}));
+        .then(res.render('StaffPortal/Manager/manageroffers', {}));
 
 };
