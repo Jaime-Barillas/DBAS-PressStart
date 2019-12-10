@@ -40,10 +40,6 @@ router.get('/repairSearchResults', function(req, res, next) {
 
 router.get('/customerSearch', employee_controller.customerSearch);
 
-router.get('/', function(req, res, next) {
-  res.render('StaffPortal/customerSearchResults', { title: site + ' | ' + 'Customers Search Results' });
-});
-
 
 //Manager Routes
 

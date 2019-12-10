@@ -111,7 +111,7 @@ exports.customerSearch = function(req, res) {
     db.Members.all()
       .then(members => res.render('StaffPortal/customerSearch',
           {
-              title: site + ' | ' + 'Customer Search',
+              title: site + ' | ' + 'Member Search',
               members: members
           }
       ));
