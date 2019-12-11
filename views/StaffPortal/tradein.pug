@@ -6,25 +6,17 @@ block content
     .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
       .page-header
         h1.pageheader-title Trade-In Search
-  .row
-    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-      h2
-        | Search Trade-Ins By Member
-      hr
-      form.form-inline.justify-content-center
-        .form-group.mx-sm-3.mb-2
-          label.sr-only(for='itemName') Member Name
-          input#itemName(type='text' name='itemName' placeholder='Item Name')
 
   .row
     .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-      table.form-inline.justify-content-center
-        tr
-          th Member
-          th Date
+      table#dt.table
+        thead
+          tr
+            th(style='min-width: 6em;') Member
+            th(style='min-width: 10em;') Date
         - for (trade of tradeIns)
           tr
             td
               a(href=`./tradeindetails/${trade.trade_invoice_id}`)= trade.member_first_name + ' ' + trade.member_last_name
             td
-              a(href=`./tradeindetails/${trade.trade_invoice_id}`)= trade.trade_invoice_date
+              a(href=`./tradeindetails/${trade.trade_invoice_id}`)= trade.trade_invoice_date.toDateString()

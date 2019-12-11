@@ -68,3 +68,17 @@ function asyncAjax(method, url) {
 
     return promise;
 }
+
+window.onload = function() {
+    console.log('hello');
+    $('#dt').DataTable(
+        {
+            paging: false,
+            searching: true,
+            info: false
+        }
+    );
+    document.querySelector('#dt_wrapper>div').style = 'min-width: 100%; margin-bottom: 5px;';
+    document.querySelector('#dt_wrapper>div>div').style = 'max-width: 0%;';
+    document.querySelector('#dt_wrapper').classList.add('justify-content-center');
+}

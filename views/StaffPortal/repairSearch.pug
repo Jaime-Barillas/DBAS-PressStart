@@ -11,19 +11,11 @@ block content
 
   .row
     .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-      h2
-        | Search Repair By Item Name
-      hr
-      form.form-inline.justify-content-center
-        .form-group.mx-sm-3.mb-2
-          input#itemName(type='text' placeholder='Member Name')
-
-  .row
-    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-      table.form-inline.justify-content-center.table
-        tr
-          th Member Name
-          th Repair Description
+      table#dt.table
+        thead
+          tr
+            th(style='min-width: 12em;') Member Name
+            th(style='min-width: 30em;') Repair Description
         - for (repair of repairs)
           tr
             td
