@@ -1476,3 +1476,31 @@ exports.Offers = {
 
 
 }
+/**
+ * A Collection of functions for validating users into the database
+ */
+exports.Authorization = {
+    /**
+     * Verfies employeecredentials
+     * @param {*} username - employee email
+     * @param {*} password - employee password
+     */
+    employeeLogin(username, password) {
+        let credentials = 'SELECT * FROM tbl_employees WHERE employee_email = $1 AND employee_password = $2;';
+
+        return pool.query(credentials, username, password)
+            .then(res => res);
+    },
+    /**
+     * Logs in a member
+     * @param {*} username - customer email address
+     * @param {*} password - customer password
+     */
+    memberLogin(username, password) {
+        let credentials = 'SELECT * FROM tbl_employees WHERE employee_email = $1 AND employee_password = $2;';
+
+        return pool.query(credentials, username, password)
+            .then(res => res.rows);
+    }
+
+}

@@ -4,7 +4,7 @@ block content
   .row.justify-content-center
     .col-md-6.col-md-offset-3
       h1.display-4.m-b-2 Log In
-      form(method='POST' action='/login')
+      form(method='POST' action='./auth')
         div.form-group
           label(for='id') UserID
           input.form-control(type='text' id='id' placeholder='userid' name='userid')
@@ -12,3 +12,4 @@ block content
           label(for='password') Password
           input.form-control(type='password' id='password' placeholder='password' name='password')
         button.btn.btn-primary(type='submit') Log in 
+

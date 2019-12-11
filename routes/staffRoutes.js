@@ -2,12 +2,44 @@ var express = require('express');
 var router = express.Router();
 
 var employee_controller = require('../controller/staff');
+var db = require('../db/api.js');
 var site = 'Press Start'
 
+
+
+
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('StaffPortal/dashboard', { title: site + ' | ' + 'Staff Dashboard' });
+router.get('/', function(req, res) {
+  res.render('StaffPortal/login', { title: site + ' | ' + 'Staff Login' });
 });
+
+router.post('/auth', function(req, res) {
+	var username = req.body.userid;
+  var password = req.body.password;
+  console.log(username)
+	if (username && password) {
+    if (db.Authorization.employeeLogin(username, password).res.length > 0) {
+      req.session.loggedin = true;
+      req.session.username = username;
+      console.log('login success');
+      res.redirect('./dashboard');
+    } else {
+      console.log('login fail');
+      res.send('Incorrect Username and/or Password!');
+    }			
+    res.end();
+	} else {
+    console.log('login not sent');
+    res.redirect('./');
+		res.send('Please enter Username and Password!');
+		res.end();
+	}
+});
+
+
+// router.get('/', function(req, res, next) {
+//   res.render('StaffPortal/dashboard', { title: site + ' | ' + 'Staff Dashboard' });
+// });
 
 /* GET dashboard page. */
 router.get('/dashboard', function(req, res, next) {
