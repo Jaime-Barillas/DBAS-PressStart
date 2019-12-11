@@ -185,6 +185,9 @@ exports.updateOffers = function(req, res)
         .then(res.render('StaffPortal/Manager/manageroffers', {}))
 };
 
+/**
+ * 
+ */
 exports.readOffers = function(req, res)
 {
     db.Offers.readOffers()

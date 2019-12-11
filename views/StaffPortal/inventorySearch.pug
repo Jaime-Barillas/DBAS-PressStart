@@ -9,19 +9,24 @@ block content
       .page-header
         h1.pageheader-title Inventory Search
   .row
-    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
-      h2
-        | Search Inventory By Item Name
-      hr
+    .col-xl-8.col-lg-8.col-md-8.col-sm-8.col-8.offset-2
+      h3
+        | Choose a Store and Search by Item Name
       form.form-inline.justify-content-center(method='post' action='./inventorySearchResults')
-        .form-group.mx-sm-3.mb-2
-          | Store
-          select#storeLocation.form-control(name='storeLocation' style='margin: 0px 20px;')
-            option(value='1') Oshawa
-            option(value='2') Toronto
-          label.sr-only(for='itemName') Item Name
-          input#itemName(type='text' name='itemName' placeholder='Item Name')
-        button.btn.btn-primary.mb-2(type='submit') Search
+        .form-group.mx-sm-4.mb-2
+        table.table
+          tr
+          td
+            | Store  
+          td
+            select#storeLocation.form-control(name='storeLocation' style='margin: 0px 20px;')
+              option(value='1') Oshawa
+              option(value='2') Toronto
+          td
+            label.sr-only.input-lg(for='itemName') Item Name
+            input#itemName(type='text' name='itemName' placeholder='Item Name')
+          td
+            button.btn.btn-primary.mb-2(type='submit') Search
   // ==============================================================
   // end pageheader
   // ==============================================================

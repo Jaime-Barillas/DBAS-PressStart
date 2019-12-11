@@ -58,6 +58,7 @@ router.post('/manager', function(req, res, next) {
 });
 
 //Routes for the sider bar news feed
+//router.get('/manager/managerupdateoffers', employee_controller.readOffers);
 router.get('/manager/managerupdateoffers', function(req, res, next) {
   res.render('StaffPortal/Manager/managerOffers',{ title: site + ' | ' + 'Manager Offers' });
 });

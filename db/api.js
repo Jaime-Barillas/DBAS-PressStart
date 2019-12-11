@@ -1446,8 +1446,9 @@ exports.Offers = {
             .catch(_ => null);
     },
     /**
-     * Function reads the current offers form tbl_news
-     * 
+     * @summary Function reads the current offers form tbl_news
+     * @returns An array of JavaScript objects containing the news_title, news_date_added, news_article.
+     *
      * @memberof module:db/api.Offers
      */
     readOffers() {
@@ -1460,8 +1461,9 @@ exports.Offers = {
             .catch(_ => null);
     },
     /**
-     * Function reads the current offers form tbl_news used on the front page
-     * 
+     * @summary Function reads the current offers form tbl_news used on the front page
+     * @returns An array of JavaScript objects containing the news_title, news_date_added, news_article.
+     *
      * @memberof module:db/api.Offers
      */
     frontPageOffers() {
