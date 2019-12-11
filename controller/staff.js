@@ -220,7 +220,6 @@ exports.employeeAdd = function(req, res) {
             }
    
         ).then(employee => {
-            res.cookie('flash', 'Employee Added!')
             res.redirect(`./employeeentry`)
         
         })
