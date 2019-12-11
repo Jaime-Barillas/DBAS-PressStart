@@ -9,10 +9,10 @@ block content
       form(method='POST' action='/')
         div.form-group
           label(for='fname') First Name:
-          input#name.form-control(type='text', placeholder='first' name='fname' required)
+          input#fname.form-control(type='text', placeholder='first' name='fname' required)
         div.form-group
           label(for='lname') Last Name:
-          input#name.form-control(type='text', placeholder='last' name='lname' required)
+          input#lname.form-control(type='text', placeholder='last' name='lname' required)
         div.form-group
           label(for='email') Email:
           input#email.form-control(type='email', placeholder='name@email.com' name='email' required)
@@ -20,19 +20,31 @@ block content
           label(for='pass1') Password:
           input#password.form-control(type='password', placeholder='password' name='pass1' required)
         div.form-group
-          label(for='pass2') Confirm Password:
-          input#password.form-control(type='password', placeholder='password' name='pass2' required)
+          label(for='job') Job Title:
+          input#job.form-control(type='text', placeholder='technician' name='job' required)
         div.form-group
-          label(for='postalcode') Hourly Rate:
+          label(for='phone') Phone:
+          input#phone.form-control(type='text', placeholder='905555134' name='phone' required)
+        div.form-group
+          label(for='address') Address:
+          input#address.form-control(type='text', placeholder='123 Cherry Lane' name='address' required)
+        div.form-group
+          label(for='postal') Postal Code:
+          input#postal.form-control(type='text', placeholder='H0H0H0' name='postal' required)
+        div.form-group
+          label(for='rate') Hourly Rate:
           input#rate.form-control(type='text', placeholder='15.00' name='rate')
         div.form-group
           label(for='availability') Availability:
           input#availability.form-control(type='text', placeholder='Monday, Tuesday' name='availability')
+        div.form-group
+          label(for='man') Technicain is a Manager:   
+            input#manager(type='checkbox' name='manager' value='true')
         div.form-group
           table.table
             tr
               td
                 button.btn.btn-primary.btn-block(type='submit') Update
               td
-                button.btn.btn-primary.btn-block(type='submit') Cancel 
+                button.btn.btn-primary.btn-block(type='reset' value="cancel") Cancel 
        

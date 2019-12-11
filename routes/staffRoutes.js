@@ -112,6 +112,9 @@ router.get('/manager/payroll/EmployeeEntry', function(req, res, next) {
   res.render('StaffPortal/Manager/managerPayrollAddEmployee',{ title: site + ' | ' + 'Add Employee' });
 });
 
+//router.get('//manager/payroll/EmployeeEntry', employee_controller.employeeAdd);
+//router.post('//manager/payroll/EmployeeEntry', employee_controller.employeeAdd);
+
 //res.render('/manager/payroll/EmployeeDetail', employee_controller.search2);
 
 router.get('/manager/reports', function(req, res, next) {

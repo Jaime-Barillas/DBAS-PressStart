@@ -1178,25 +1178,30 @@ exports.Employees = {
      *
      * @memberof module:db/api.Employees
      */
-    create: function({email, password, firstName, lastName, jobTitle, postalCode, address, phone, availability, wage}) {
+    create: function({password, firstName, lastName, jobTitle, phone, email, address, postalCode, availability, wage, manager}) {
         // TODO: Parameter validation.
+        if (manager == 'true') {}
+        else{
+            manager = false;
+        }
         const createSql = `INSERT INTO tbl_employees(
-                               employee_email,
                                employee_password,
                                employee_first_name,
                                employee_last_name,
                                employee_job_title,
-                               employee_postal_code,
-                               employee_address,
                                employee_phone,
+                               employee_email,
+                               employee_address,
+                               employee_postal_code,
                                employee_availability,
                                employee_wage
-                           ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                               employee_manager
+                           ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, #11)
                                RETURNING *;`;
 
-        return pool.query(createSql, [email, password, firstName, lastName,
-                                      jobTitle, postalCode, address, phone,
-                                      availability, wage])
+        return pool.query(createSql, [password, firstName, lastName,
+                                      jobTitle, phone, email, address,  postalCode, 
+                                      availability, wage, manager])
                    .then(res => res.rows[0])
                    .catch(_ => null);
     },

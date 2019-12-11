@@ -197,3 +197,29 @@ exports.readOffers = function(req, res)
         }))
 
 };
+
+exports.employeeAdd = function(req, res) {
+    if (req.method === 'GET') {
+        res.render('StaffPortal/Manager/employeeentry', {});
+    } else if (req.method === 'POST') {
+        db.Employees.create(
+            {
+                password: req.body.pass1,
+                firstName: req.body.fname,
+                lastName: req.body.lname,
+                jobTitle: req.body.job,
+                phone: req.body.phone,
+                email: req.body.email,                
+                address: req.body.address,
+                postalCode: req.body.postal,
+                availability: req.body.availability,
+                wage: req.body.rate,
+                manager: req.body.man
+            }
+        ).then(employee => {
+            res.cookie('flash', 'Employee Added!')
+            res.redirect(`./employeeentry/`)
+        });
+    }
+}
+
