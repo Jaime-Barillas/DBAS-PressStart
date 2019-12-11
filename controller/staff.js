@@ -200,8 +200,10 @@ exports.readOffers = function(req, res)
 
 exports.employeeAdd = function(req, res) {
     if (req.method === 'GET') {
-        res.render('StaffPortal/Manager/employeeentry', {});
+        console.log('getting...')
+        res.render('StaffPortal/Manager/managerPayrollAddEmployee', {});
     } else if (req.method === 'POST') {
+        console.log('posting...')
         db.Employees.create(
             {
                 password: req.body.pass1,
