@@ -1005,6 +1005,45 @@ exports.Members = {
     },
 
     /**
+     * Updates a member with the specified info.
+     *
+     * @param {Object} memberData - Contains the required information for the new member.
+     * @param {String} memberData.id - The member's id.
+     * @param {String} memberData.email - The new member's email address.
+     * @param {String} memberData.firstName - The new member's given name.
+     * @param {String} memberData.lastName - The new member's surname.
+     * @param {String} memberData.postalCode - The new member's postal code.
+     * @param {String} memberData.phone - The new member's phone number.
+     * @param {Boolean} memberData.mailingList - Whether the new member wishes to receive news letters.
+     * @param {integer} memberData.prefferedStore - Id for the new member's preffered store.
+     *
+     * @returns A Promise that contains a JS object representing the newly
+     * updated member. If creation of the new member failed, <code>null</code>
+     * is returned.
+     *
+     * @memberof module:db/api.Members
+     */
+    update: function({id, email, firstName, lastName, postalCode, phone, mailingList, prefferedStore}) {
+        // TODO: Parameter validation.
+        const updateSql = `UPDATE tbl_members
+                           SET member_first_name = $1,
+                               member_last_name = $2,
+                               member_email = $3,
+                               member_mailing_list = $4,
+                               member_phone = $5,
+                               member_postal_code = $6,
+                               member_preffered_store = $7
+                           WHERE member_id = $8
+                           RETURNING *`;
+
+        return pool.query(updateSql, [firstName, lastName, email,
+                                      mailingList, phone, postalCode,
+                                      prefferedStore, id])
+                   .then(res => res.rows[0])
+                   .catch(_ => null);
+    },
+
+    /**
      * This function returns all members from the Press Start database.
      *
      * @returns An array of all Press Start members.
@@ -1017,7 +1056,7 @@ exports.Members = {
      * @memberof module:db/api.Members
      */
     all: function() {
-        return pool.query('SELECT * from tbl_members;')
+        return pool.query('SELECT * from tbl_members ORDER BY member_id ASC;')
                    .then(res => res.rows);
     },
 

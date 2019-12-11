@@ -117,6 +117,37 @@ exports.customerSearch = function(req, res) {
       ));
 }
 
+exports.customerUpdate = function(req, res) {
+    if (req.method === 'GET') {
+        let flashText = req.cookies.flash;
+        res.clearCookie('flash');
+        db.Members.search({id: req.params.id})
+          .then(members => res.render('StaffPortal/customerUpdate',
+              {
+                  title: site + ' | ' + 'Customer Update',
+                  member: members[0],
+                  flash: flashText
+              }
+          ));
+    } else if (req.method === 'POST') {
+        db.Members.update(
+            {
+                id: req.params.id,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                mailingList: req.body.mailingList,
+                phone: req.body.phone,
+                postalCode: req.body.postalCode,
+                prefferedStore: req.body.prefferedStore
+            }
+        ).then(member => {
+            res.cookie('flash', 'Member Info Updated!')
+            res.redirect(`../customerUpdate/${req.params.id}`)
+        });
+    }
+}
+
 
 
 

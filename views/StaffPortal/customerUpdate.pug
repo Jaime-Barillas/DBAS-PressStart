@@ -1,0 +1,55 @@
+extends ../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Member Update
+
+  - if (flash)
+    div.bg-success.text-light(style='border solid 2px black; border-radius: 4px; text-align: center; padding: 5px 0px')
+      h2(style='margin: 0px;')= flash
+
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      form(method='post')
+        table.table.form-inline.justify-content-center
+          tr
+            th First Name:
+            td
+              input(type='text' name='firstName' value=member.member_first_name)
+            th Last Name:
+            td
+              input(type='text' name='lastName' value=member.member_last_name)
+          tr
+            th Email:
+            td
+              input(type='email' name='email' value=member.member_email)
+            th Subscribe to Mailing List?:
+            td
+              input(type='checkbox' name='mailingList' checked=member.member_mailing_list)
+          tr
+            th Phone:
+            td
+              input(type='tel' name='phone' value=member.member_phone)
+            th Postal Code:
+            td
+              input(type='text' name='postalCode' value=member.member_postal_code)
+          tr
+            th Preffered Store:
+            td
+              label(for='storeOshawa')
+                input#storeOshawa(type='radio' name='prefferedStore' value='1' checked=member.member_preffered_store == 1)
+                | Oshawa
+            td
+              label(for='storeToronto')
+                input#storeToronto(type='radio' name='prefferedStore' value='2' checked=member.member_preffered_store == 2)
+                | Toronto
+          tr.form-inline.justify-content-center
+            td(colspan='2')
+              input(type='submit' value='Update')
+            td(colspan='2')
+              input(type='reset' value='Cancel')
