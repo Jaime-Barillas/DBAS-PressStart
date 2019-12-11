@@ -1180,11 +1180,12 @@ exports.Employees = {
      */
     create: function({password, firstName, lastName, jobTitle, phone, email, address, postalCode, availability, wage, manager}) {
         // TODO: Parameter validation.
-        console.log(password+ firstName+ lastName+ jobTitle+ phone+ email+address+ postalCode+ availability+ wage+ manager)
+        
         if (manager == 'true') {}
         else {
             manager = false;
         }
+        console.log(firstName+ lastName+ jobTitle+ phone+ email+address+ postalCode+ availability+ wage+ manager)
         const createSql = `INSERT INTO tbl_employees(
                                employee_password,
                                employee_first_name,
@@ -1199,7 +1200,7 @@ exports.Employees = {
                                employee_manager
                            ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                                RETURNING *;`;
-                               
+
         return pool.query(createSql, [password, firstName, lastName,
                                       jobTitle, phone, email, address, postalCode, 
                                       availability, wage, manager])
