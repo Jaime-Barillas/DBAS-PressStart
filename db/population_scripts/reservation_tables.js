@@ -20,7 +20,7 @@ function randomDate() {
     var timeStamp = new Date(minDate.getTime() + Math.random() 
         * (maxDate.getTime() - minDate.getTime()));
     var year = timeStamp.getFullYear();
-    var month = timeStamp.getMonth() + 1;  // month index value is 0-11 so we must compenstte
+    var month = timeStamp.getMonth() + 1;  // month index value is 0-11 so we must compenste
     var day = timeStamp.getDate();
     return year + '-' + month + '-' + day ;
 }

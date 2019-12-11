@@ -435,10 +435,12 @@ exports.Repairs = {
      * This function returns the id and description of all repairs.
      * The returned data is an array with objects of the format:
      * <br/><br/>
-     * <pre><code> // Format:
+     * <pre>
+     * <code style="display: inline-block;">
      * {
      *     repair_invoice_id: blah,
-     *     repair_invoice_description: blah
+     *     repair_invoice_description: blah,
+     *     repair_member_name: blah
      * }
      * </code></pre>
      *
@@ -451,7 +453,13 @@ exports.Repairs = {
      * @memberof module:db/api.Repairs
      */
     all: function() {
-        return pool.query('SELECT repair_invoice_id, repair_invoice_description FROM tbl_repair_invoices;')
+        return pool.query(`SELECT repair_invoice_id,
+                                  repair_invoice_description,
+                                  (member_first_name || ' ' || member_last_name) As repair_member_name
+                           FROM tbl_repair_invoices
+                           JOIN tbl_members
+                           ON tbl_repair_invoices.member_id = tbl_members.member_id
+                           ORDER BY tbl_repair_invoices.repair_invoice_id DESC;`)
                    .then(res => res.rows);
     },
 
@@ -1356,4 +1364,72 @@ exports.Reports = {
         return pool.query(monthlyReportSql)
                    .then(res => res.rows);
     }
+}
+/**
+ * A collection of functions for interacting with the news / mailing list.
+ *
+ * @namespace
+ */
+exports.Offers = {
+    /**
+     * This function inserts news datainto tbl_news. The
+     * returned data is an array that contains objects of the format:
+     * @param {Object} news - Contains the news data.
+     * @param {string} news.title - Contains the title of the article.
+     * @param {String} news.dateAdded - Date of the article in default format.
+     * @param {date} news.article - Article details.
+     * @param {boolean} news.frontPage - boolean to dictate if news will be pushed to front page.
+     *
+     * @returns A Promise that contains a JS object representing the newly
+     * created news item. If creation faileds, <code>null</code>
+     * is returned.
+     *
+     * @memberof module:db/api.Offers
+     */
+    updateOffer({title, article, frontpage }) {
+        var timeStamp = new Date();
+        var year = timeStamp.getFullYear();
+        var month = timeStamp.getMonth() + 1;  // month index value is 0-11 so we must compensate
+        var day = timeStamp.getDate();
+        let date = year + '-' + month + '-' + day;
+        //console.log(frontpage) - for debugging
+        if (frontpage == 'true') {}
+        else{
+            frontpage = false;
+        }
+            
+        let updateOfferSQL = `INSERT INTO tbl_news(news_title, news_date_added, news_article, news_front_page
+            ) VALUES($1, $2, $3, $4)
+            RETURNING *`;
+
+        return pool.query(updateOfferSQL, [title, date, article, frontpage])
+            .then(res => res.rows[0])
+            .catch(_ => null);
+    },
+    /**
+     * Function reads the current offers form tbl_news
+     * 
+     * @memberof module:db/api.Offers
+     */
+    readOffers() {
+        let readOffersSQL = 'SELECT news_title, news_date_added, news_article FROM tbl_news '+
+            'ORDER BY news_date_added desc;';
+
+        return pool.query(readOffersSQL)
+            .then(res => res.rows);
+    },
+    /**
+     * Function reads the current offers form tbl_news used on the front page
+     * 
+     * @memberof module:db/api.Offers
+     */
+    frontPageOffers() {
+        let frontPageOffersSQL = 'SELECT news_title, news_date_added, news_article FROM tbl_news '+
+            'WHERE news_front_page=\'true\' ORDER BY news_date_added desc;';
+
+        return pool.query(frontPageOffersSQL)
+            .then(res => res.rows);
+    }
+
+
 }

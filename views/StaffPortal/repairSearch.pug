@@ -1,0 +1,23 @@
+extends ../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Repair Search
+
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      table#dt.table
+        thead
+          tr
+            th(style='min-width: 12em;') Member Name
+            th(style='min-width: 30em;') Repair Description
+        - for (repair of repairs)
+          tr
+            td
+              a(href=`./repairDetails/${repair.repair_invoice_id}`)= repair.repair_member_name
+            td= repair.repair_invoice_description

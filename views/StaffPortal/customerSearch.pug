@@ -1,0 +1,28 @@
+extends ../Partials/layout.pug
+
+block content
+  // ==============================================================
+  // pageheader
+  // ==============================================================
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      .page-header
+        h1.pageheader-title Member Search
+
+  .row
+    .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
+      table#dt.table
+        thead
+          tr
+            th(style='min-width: 8em;') First Name
+            th(style='min-width: 8em;') Last Name
+            th(style='min-width: 5em;') Email
+            th(style='min-width: 10em;') Phone Number
+            th(style='min-width: 10em;') Mailing List?
+        - for (member of members)
+          tr
+            td= member.member_first_name
+            td= member.member_last_name
+            td= member.member_email
+            td= member.member_phone
+            td= member.member_mailing_list ? 'Yes' : 'No'

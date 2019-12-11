@@ -33,19 +33,17 @@ block content
       // ==============================================================
       // Results
       // ==============================================================
-    table.table.container
+    table#dt.table
       thead
         tr
-          th Game
-          th Total Sold
-          th Total Revenue
+          th(style='min-width: 10em;') Game
+          th(style='min-width: 8em;') Total Sold
+          th(style='min-width: 12em;') Total Revenue
       tfoot
         tr
           th Game
           th Total Sold
           th Total Revenue
-      tbody
-      //- div= JSON.stringify(dat)
       - for (row of dat)
         tr
           td= row.item_name

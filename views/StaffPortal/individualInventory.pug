@@ -7,7 +7,7 @@ block content
   .row
     .col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12
       .page-header
-        h1.pageheader-title Individual Inventory Search Results
+        h1.pageheader-title Individual Inventory Listing
   // ==============================================================
   // end pageheader
   // ==============================================================
@@ -17,20 +17,20 @@ block content
       hr
       table.table
         tr
-          td Description
+          th Description:
           td(colspan='3')= item.item_description
         tr
-          td Physical Condition
+          th Physical Condition:
           td= condition.physicalCondition
-          td Quantity
+          th Quantity
           td= item.item_stock_quantity
         tr
-          td Box Condition
+          th Box Condition:
           td= condition.boxCondition
-          td Sales Price
+          th Sales Price
           td= item.item_sale_price
         tr
-          td Manual Condition
+          th Manual Condition:
           td= condition.manualCondition
-          td MSRP
+          th MSRP
           td= item.item_mrsp
