@@ -1452,9 +1452,9 @@ exports.Offers = {
      */
     readOffers() {
         let readOffersSQL = `SELECT news_title, news_date_added, 
-            news_article FROM tbl_news,
+            news_article FROM tbl_news
             ORDER BY news_date_added desc;`;
-
+        console.log(readOffersSQL)
         return pool.query(readOffersSQL)
             .then(res => res.rows)
             .catch(_ => null);
