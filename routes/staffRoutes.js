@@ -43,10 +43,11 @@ router.get('/customerSearch', employee_controller.customerSearch);
 
 //Manager Routes
 
+router.get('/manager/', employee_controller.readOffers);
 
-router.get('/manager', function(req, res, next) {
-  res.render('StaffPortal/Manager/manager', { title: site + ' | ' + 'Manager Home' });
-});
+// router.get('/manager', function(req, res, next) {
+//   res.render('StaffPortal/Manager/manager', { title: site + ' | ' + 'Manager Home' });
+// });
 
 router.post('/manager', function(req, res, next) {
   res.render('StaffPortal/Manager/manager', { title: site + ' | ' + 'Manager Home' });

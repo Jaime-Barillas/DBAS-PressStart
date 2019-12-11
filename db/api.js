@@ -1412,11 +1412,13 @@ exports.Offers = {
      * @memberof module:db/api.Offers
      */
     readOffers() {
-        let readOffersSQL = 'SELECT news_title, news_date_added, news_article FROM tbl_news '+
-            'ORDER BY news_date_added desc;';
+        let readOffersSQL = `SELECT news_title, news_date_added, 
+            news_article FROM tbl_news,
+            ORDER BY news_date_added desc;`;
 
         return pool.query(readOffersSQL)
-            .then(res => res.rows);
+            .then(res => res.rows)
+            .catch(_ => null);
     },
     /**
      * Function reads the current offers form tbl_news used on the front page

@@ -151,6 +151,15 @@ exports.updateOffers = function(req, res)
     let frontpage = req.body.frontpage;
 
     db.Offers.updateOffer({title: title, article: article, frontpage: frontpage})
-        .then(res.render('StaffPortal/Manager/manageroffers', {}));
+        .then(res.render('StaffPortal/Manager/manageroffers', {}))
+};
+
+exports.readOffers = function(req, res)
+{
+    db.Offers.readOffers()
+        .then(offers => res.render('StaffPortal/Manager/manager', {
+            title: site + ' | ' + 'Manager Home',
+            offers: offers
+        }))
 
 };
