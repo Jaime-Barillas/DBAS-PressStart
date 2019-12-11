@@ -204,9 +204,9 @@ exports.employeeAdd = function(req, res) {
         res.render('StaffPortal/Manager/managerPayrollAddEmployee', {});
     } else if (req.method === 'POST') {
         console.log('posting...')
-        db.Employees.create(
+        try {db.Employees.create(
             {
-                password: req.body.pass1,
+                password: req.body.pass,
                 firstName: req.body.fname,
                 lastName: req.body.lname,
                 jobTitle: req.body.job,
@@ -216,12 +216,19 @@ exports.employeeAdd = function(req, res) {
                 postalCode: req.body.postal,
                 availability: req.body.availability,
                 wage: req.body.rate,
-                manager: req.body.man
+                manager: req.body.manager
             }
+   
         ).then(employee => {
             res.cookie('flash', 'Employee Added!')
-            res.redirect(`./employeeentry/`)
-        });
+            res.redirect(`./employeeentry`)
+        
+        })
+        .catch(_ => null);
+        }
+        catch(error){
+            console.error(error);
+        }
     }
 }
 

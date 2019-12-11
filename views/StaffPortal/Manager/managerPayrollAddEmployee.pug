@@ -6,7 +6,7 @@ block content
       h3.display-4.m-b-2 Employee Registration
 
       // register form
-      form(method='POST' )
+      form(method='POST' action='./employeeentry')
         div.form-group
           label(for='fname') First Name:
           input#fname.form-control(type='text', placeholder='first' name='fname' required)
@@ -17,8 +17,8 @@ block content
           label(for='email') Email:
           input#email.form-control(type='email', placeholder='name@email.com' name='email' required)
         div.form-group
-          label(for='pass1') Password:
-          input#password.form-control(type='password', placeholder='password' name='pass1' required)
+          label(for='pass') Password:
+          input#pass.form-control(type='password', placeholder='password' name='pass' required)
         div.form-group
           label(for='job') Job Title:
           input#job.form-control(type='text', placeholder='technician' name='job' required)
@@ -38,7 +38,7 @@ block content
           label(for='availability') Availability:
           input#availability.form-control(type='text', placeholder='Monday, Tuesday' name='availability')
         div.form-group
-          label(for='man') Technicain is a Manager:   
+          label(for='manager') Technicain is a Manager:   
             input#manager(type='checkbox' name='manager' value='true')
         div.form-group
           table.table
