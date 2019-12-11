@@ -40,6 +40,10 @@ router.get('/repairSearchResults', function(req, res, next) {
 
 router.get('/customerSearch', employee_controller.customerSearch);
 
+router.get('/customerUpdate/:id', employee_controller.customerUpdate);
+
+router.post('/customerUpdate/:id', employee_controller.customerUpdate);
+
 
 //Manager Routes
 

@@ -21,8 +21,11 @@ block content
             th(style='min-width: 10em;') Mailing List?
         - for (member of members)
           tr
-            td= member.member_first_name
-            td= member.member_last_name
-            td= member.member_email
+            td
+              a(href=`./customerUpdate/${member.member_id}`)= member.member_first_name
+            td
+              a(href=`./customerUpdate/${member.member_id}`)= member.member_last_name
+            td
+              a(href=`./customerUpdate/${member.member_id}`)= member.member_email
             td= member.member_phone
             td= member.member_mailing_list ? 'Yes' : 'No'
